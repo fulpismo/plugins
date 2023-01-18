@@ -158,6 +158,48 @@
     return image;
 }
 
+- (UIImage *)priceOvalMarkerImageWithText:(NSString *)text {
+    UIFont *textFont =  [UIFont fontWithName:self.fontPath size:[_iconImage size].width / 3.5];
+    CGSize stringSize = [text sizeWithAttributes:@{NSFontAttributeName:textFont}];
+    CGFloat markerWidth = stringSize.width * 1.25;
+    CGFloat markerHeight = stringSize.height * 1.50;
+    // CGSize canvas = CGSizeMake(markerWidth + 2, markerHeight + 10);
+    CGSize canvas = CGSizeMake(markerWidth + 2, markerHeight + 2);
+    CGFloat y = (canvas.height / 2) - (stringSize.height / 2);
+    CGFloat x = (canvas.width / 2) - (stringSize.width / 2);
+    CGRect textRect = CGRectMake(x, y, stringSize.width, stringSize.height);
+    UIGraphicsBeginImageContext(canvas);
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize: canvas];
+    UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
+        
+        // CGMutablePathRef path = CGPathCreateMutable();
+        // CGPathMoveToPoint(path, nil, canvas.width / 2 - 10, markerHeight);
+        // CGPathAddLineToPoint(path, nil, canvas.width / 2, markerHeight + 10);
+        // CGPathAddLineToPoint(path, nil, canvas.width / 2 + 10, markerHeight);
+        // CGPathAddLineToPoint(path, nil, canvas.width / 2 - 10, markerHeight);
+        
+        CGContextSetAlpha(rendererContext.CGContext, 0.02);
+        CGContextSetFillColorWithColor(rendererContext.CGContext, UIColor.grayColor.CGColor);
+        UIBezierPath *shadow = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, markerWidth + 2, markerHeight + 2) cornerRadius:5];
+        [shadow fill];
+        [shadow stroke];
+        CGContextSetAlpha(rendererContext.CGContext, 1.0);
+        CGContextSetFillColorWithColor(rendererContext.CGContext, UIColor.whiteColor.CGColor);
+        CGContextSetStrokeColorWithColor(rendererContext.CGContext, UIColor.clearColor.CGColor);
+        CGContextSetLineWidth(rendererContext.CGContext, 5);
+        CGContextSetLineJoin(rendererContext.CGContext, 0);
+        // CGContextAddPath(rendererContext.CGContext, path);
+        CGContextDrawPath(rendererContext.CGContext, 3);
+        UIBezierPath *bezier = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(1, 1, markerWidth, markerHeight) cornerRadius:10];
+        [bezier fill];
+        [bezier stroke];
+        [text drawInRect:CGRectIntegral(textRect) withAttributes:@{NSFontAttributeName:textFont}];
+        CGPathRelease(path);
+    }];
+    UIGraphicsEndImageContext();
+    return image;
+}
+
 
 - (void)interpretMarkerOptions:(NSDictionary *)data
                      registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -196,6 +238,19 @@
             }
         }
         else if([markerType isEqualToString:@"price"]) {
+            NSString *label = data[@"label"];
+            if(label && label != (id)[NSNull null]) {
+                UIImage *img = [self priceOvalMarkerImageWithText:label];
+                [self setIcon:img];
+            } else {
+                NSString *error =
+                [NSString stringWithFormat:@"label was not provided."];
+                NSException *exception = [NSException exceptionWithName:@"InvalidBitmapDescriptor"
+                                                                 reason:error
+                                                               userInfo:nil];
+                @throw exception;
+            }            }
+        else if([markerType isEqualToString:@"price_legacy"]) {
             NSString *label = data[@"label"];
             if(label && label != (id)[NSNull null]) {
                 UIImage *img = [self priceMarkerImageWithText:label];

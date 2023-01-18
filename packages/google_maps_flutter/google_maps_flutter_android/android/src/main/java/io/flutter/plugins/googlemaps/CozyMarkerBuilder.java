@@ -67,7 +67,7 @@ public class CozyMarkerBuilder {
         int minMarkerSize = 67;
 
         int physicalPixelHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-        double heightRatio = ((double ) (physicalPixelHeight)) / ((double) (baseScreenHeight));
+        double heightRatio = ((double) (physicalPixelHeight)) / ((double) (baseScreenHeight));
         int proportionalMarkerSize = (int) (baseMarkerSize * heightRatio);
 
         if (proportionalMarkerSize > maxMarkerSize) {
@@ -116,10 +116,10 @@ public class CozyMarkerBuilder {
 
         int padding = this.bubblePointSize * 2;
         int width = rect.width() + padding;
+        int height = rect.height() + padding + bubblePointSize;
 
         RectF bubble = new RectF(0, 0, width, rect.height() + padding);
 
-        int height = rect.height() + padding + bubblePointSize;
         Bitmap marker = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(marker);
 
@@ -136,12 +136,39 @@ public class CozyMarkerBuilder {
         return marker;
     }
 
+    private Bitmap addOvalMarkerText(String text) {
+        Rect rect = new Rect();
+        bubbleTextPaint.getTextBounds(text, 0, text.length(), rect);
+
+        int padding = this.bubblePointSize * 2;
+        int width = rect.width() + padding;
+        int height = rect.height() + padding;
+
+        RectF bubble = new RectF(0, 0, width, height);
+
+        Bitmap marker = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        double density = Resources.getSystem().getDisplayMetrics().density;
+        int borderRadius = (int) (5 * density);
+        Canvas canvas = new Canvas(marker);
+        canvas.drawRoundRect(bubble, borderRadius, borderRadius, getShadowPaint());
+        canvas.drawRoundRect(bubble, borderRadius, borderRadius, getBackgroundColor());
+
+        float dx = (width / 2f) - (rect.width() / 2f) - rect.left;
+        float dy = ((rect.height() + padding) / 2f) + (rect.height() / 2f) - rect.bottom;
+
+        canvas.drawText(text, dx, dy, bubbleTextPaint);
+        return marker;
+    }
+
     public Bitmap buildMarker(String type, String text) {
         switch (type) {
             case "count":
                 return addClusterMarkerText(text);
-            case "price":
+            case "price_legacy":
                 return addBubbleMarkerText(text);
+            case "price":
+                return addOvalMarkerText(text);
             default:
                 return null;
         }

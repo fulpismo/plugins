@@ -15,11 +15,15 @@ Object _offsetToJson(Offset offset) {
 
 /// The type of marker icon which should be displayed.
 enum MarkerType {
-  /// A white round circle with text in the middle. If chosen, an label must
+  /// A white circle with text in the middle. If chosen, an label must
   /// be passed in the label argument.
   count,
 
   /// A white text bubble with text in the middle. The bubble adjusts itself
+  /// to the text. If chosen, an label must be passed in the label argument.
+  price_legacy,
+
+  /// A white oval shape with text in the middle. The shape adjusts itself
   /// to the text. If chosen, an label must be passed in the label argument.
   price,
 
@@ -141,6 +145,8 @@ class Marker implements MapsObject<Marker> {
   /// Specifies a marker that
   /// * is fully opaque; [alpha] is 1.0
   /// * uses icon bottom center to indicate map position; [anchor] is (0.5, 1.0)
+  /// * has a pre-set marker type or a customized one; [markerType] is (icon, count, price_legacy, price)
+  /// * has a text to be added in case the marker type is count or price.
   /// * has default tap handling; [consumeTapEvents] is false
   /// * is stationary; [draggable] is false
   /// * is drawn against the screen, not the map; [flat] is false

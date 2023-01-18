@@ -419,6 +419,7 @@ class Convert {
         sink.setIcon(toBitmapDescriptor(icon));
         break;
       case "price":
+      case "price_legacy":
       case "count":
         final Object label = data.get("label");
         if (label == null) {
