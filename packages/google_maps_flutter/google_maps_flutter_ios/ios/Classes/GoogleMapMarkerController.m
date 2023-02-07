@@ -161,7 +161,7 @@
     return image;
 }
 
-- (UIImage *)roundedMarkerImageWithText:(NSString *)text {
+- (UIImage *)roundedMarkerImageWithText:(NSString *)text withMarkerColor:(UIColor *)color withTextColor:(UIColor *)textColor {
     UIFont *textFont =  [UIFont fontWithName:self.fontPath size:[_iconImage size].width / 3.5];
     CGSize stringSize = [text sizeWithAttributes:@{NSFontAttributeName:textFont}];
     
@@ -187,7 +187,7 @@
         [shadow fill];
         [shadow stroke];
         CGContextSetAlpha(rendererContext.CGContext, 1.0);
-        CGContextSetFillColorWithColor(rendererContext.CGContext, UIColor.whiteColor.CGColor);
+        CGContextSetFillColorWithColor(rendererContext.CGContext, color.CGColor);
         CGContextSetStrokeColorWithColor(rendererContext.CGContext, UIColor.clearColor.CGColor);
         CGContextSetLineWidth(rendererContext.CGContext, 5);
         CGContextSetLineJoin(rendererContext.CGContext, 0);
@@ -195,7 +195,7 @@
         UIBezierPath *bezier = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(shadowSize / 2, shadowSize / 2, markerWidth - shadowSize, markerHeight - shadowSize) cornerRadius:20];
         [bezier fill];
         [bezier stroke];
-        [text drawInRect:CGRectIntegral(textRect) withAttributes:@{NSFontAttributeName:textFont}];
+        [text drawInRect:CGRectIntegral(textRect) withAttributes:@{NSFontAttributeName:textFont, NSForegroundColorAttributeName: textColor}];
     }];
     UIGraphicsEndImageContext();
     return image;
@@ -240,8 +240,8 @@
         } else if([markerType isEqualToString:@"rounded"]) {
             NSString *label = data[@"label"];
             if(label && label != (id)[NSNull null]) {
-                UIImage *img = [self roundedMarkerImageWithText:label];
-                [self setIcon:img];
+                UIImage *image = [self roundedMarkerImageWithText:label withMarkerColor:UIColor.whiteColor withTextColor:UIColor.blackColor];
+                [self setIcon:image];
             } else {
                 NSString *error =
                 [NSString stringWithFormat:@"label was not provided."];
@@ -249,8 +249,35 @@
                                                                  reason:error
                                                                userInfo:nil];
                 @throw exception;
-            }           
+            }
+         }else if([markerType isEqualToString:@"rounded_visited"]) {
+            NSString *label = data[@"label"];
+            if(label && label != (id)[NSNull null]) {
+                UIImage *image = [self roundedMarkerImageWithText:label withMarkerColor:UIColor.whiteColor withTextColor:[UIColor colorWithRed:(110.0f/255.0f) green:(110.0f/255.0f) blue:(100.0f/255.0f) alpha:1]];
+                [self setIcon:image];
+            } else {
+                NSString *error =
+                [NSString stringWithFormat:@"label was not provided."];
+                NSException *exception = [NSException exceptionWithName:@"InvalidBitmapDescriptor"
+                                                                 reason:error
+                                                               userInfo:nil];
+                @throw exception;
+            }
          }
+        else if([markerType isEqualToString:@"rounded_selected"]) {
+           NSString *label = data[@"label"];
+           if(label && label != (id)[NSNull null]) {
+               UIImage *image = [self roundedMarkerImageWithText:label withMarkerColor:[UIColor colorWithRed:(57.0f/255.0f) green:(87.0f/255.0f) blue:(189.0f/255.0f) alpha:1] withTextColor:UIColor.whiteColor];
+               [self setIcon:image];
+           } else {
+               NSString *error =
+               [NSString stringWithFormat:@"label was not provided."];
+               NSException *exception = [NSException exceptionWithName:@"InvalidBitmapDescriptor"
+                                                                reason:error
+                                                              userInfo:nil];
+               @throw exception;
+           }
+        }
         else if([markerType isEqualToString:@"price"]) {
             NSString *label = data[@"label"];
             if(label && label != (id)[NSNull null]) {

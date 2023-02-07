@@ -420,6 +420,8 @@ class Convert {
         break;
       case "price":
       case "rounded":
+      case "rounded_selected":
+      case "rounded_visited":
       case "count":
         final Object label = data.get("label");
         if (label == null) {
