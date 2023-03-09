@@ -182,7 +182,15 @@ class MarkersController {
   private void addMarker(String markerId, MarkerOptions markerOptions, boolean consumeTapEvents) {
     final Marker marker = googleMap
             .addMarker(markerOptions);
-    ObjectAnimator.ofFloat(marker, "alpha", 0f, 1f).setDuration(300).start();
+    ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
+    fadeIn.setDuration(300);
+    fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            markerController.setAlpha((float) animation.getAnimatedValue());
+        }
+    });
+    fadeIn.start();
     MarkerController controller = new MarkerController(marker, consumeTapEvents);
     markerIdToController.put(markerId, controller);
     googleMapsMarkerIdToDartMarkerId.put(marker.getId(), markerId);
