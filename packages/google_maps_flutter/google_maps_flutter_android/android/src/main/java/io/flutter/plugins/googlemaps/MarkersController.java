@@ -187,7 +187,7 @@ class MarkersController {
     fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
-            markerController.setAlpha((float) animation.getAnimatedValue());
+            marker.setAlpha((float) animation.getAnimatedValue());
         }
     });
     fadeIn.start();
