@@ -5,12 +5,14 @@
 package io.flutter.plugins.googlemaps;
 
 import android.graphics.Bitmap;
+
 import android.animation.ValueAnimator;
 import android.animation.ObjectAnimator;
 import android.view.animation.Interpolator;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -18,6 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,7 +34,8 @@ class MarkersController {
   private GoogleMap googleMap;
   private final CozyMarkerBuilder cozyMarkerBuilder;
   private boolean markersAnimationEnabled;
-  private final int markersAnimationDuration = 100;
+  private final int markersAnimationDuration = 1000;
+  final Map<String, Boolean> isIconPendingForMarkerId = new HashMap<String, Boolean>();
 
   MarkersController(MethodChannel methodChannel, CozyMarkerBuilder cozyMarkerBuilder) {
     this.markerIdToController = new HashMap<>();
@@ -75,7 +79,7 @@ class MarkersController {
       String markerId = (String) rawMarkerId;
       final MarkerController markerController = markerIdToController.remove(markerId);
       if (markerController != null) {
-        if (this.markersAnimationEnabled) {
+        /*if (this.markersAnimationEnabled) {
           ValueAnimator fadeOut = ValueAnimator.ofFloat(1f, 0f);
           fadeOut.setDuration(this.markersAnimationDuration);
           fadeOut.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -91,9 +95,9 @@ class MarkersController {
           fadeOut.setInterpolator(fadeOutInterpolator);
 
           fadeOut.start();
-        }else{
+        }else{*/
           markerController.remove();
-        }
+        //}
         googleMapsMarkerIdToDartMarkerId.remove(markerController.getGoogleMapsMarkerId());
       }
     }
@@ -190,19 +194,37 @@ class MarkersController {
     MarkerBuilder markerBuilder = new MarkerBuilder();
     String markerId = Convert.interpretMarkerOptions(marker, markerBuilder, cozyMarkerBuilder);
     MarkerOptions options = markerBuilder.build();
-    addMarker(markerId, options, markerBuilder.consumeTapEvents());
+    addMarker(markerId, options, markerBuilder.consumeTapEvents(), marker);
   }
 
-  private void addMarker(String markerId, MarkerOptions markerOptions, boolean consumeTapEvents) {
+  private void addMarker(String markerId, MarkerOptions markerOptions, boolean consumeTapEvents, Object o) {
     final Marker marker = googleMap
             .addMarker(markerOptions);
+    final List<BitmapDescriptor> bitmapForFrame = new ArrayList<BitmapDescriptor>();
+    final Map<?, ?> data = toMap(o);
+
+    final String markerType = data.get("markerType").toString();
+    final Object icon = data.get("icon");
+    final String label = data.get("label").toString();
+
+    for(int i = 0; i <= 30; i++){
+      final BitmapDescriptor markerIconFrame = Convert.renderMarkerIcon(cozyMarkerBuilder, icon, markerType, label, (float) i/30f);
+      bitmapForFrame.add(markerIconFrame);
+    }
+    isIconPendingForMarkerId.put(markerId, false);
     if (this.markersAnimationEnabled) {
       ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
       fadeIn.setDuration(this.markersAnimationDuration);
       fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
           @Override
           public void onAnimationUpdate(ValueAnimator animation) {
-              marker.setAlpha((float) animation.getAnimatedValue());
+            if(!isIconPendingForMarkerId.get(markerId)){
+              final int index = (int)((float) animation.getAnimatedValue() * 30);
+              isIconPendingForMarkerId.put(markerId, true);
+              marker.setIcon(bitmapForFrame.get(index));
+              isIconPendingForMarkerId.put(markerId, false);
+            }
+              //marker.setAlpha((float) animation.getAnimatedValue());
           }
       });
 
@@ -213,6 +235,10 @@ class MarkersController {
     MarkerController controller = new MarkerController(marker, consumeTapEvents);
     markerIdToController.put(markerId, controller);
     googleMapsMarkerIdToDartMarkerId.put(marker.getId(), markerId);
+  }
+
+  private static Map<?, ?> toMap(Object o) {
+    return (Map<?, ?>) o;
   }
 
   private void changeMarker(Object marker) {

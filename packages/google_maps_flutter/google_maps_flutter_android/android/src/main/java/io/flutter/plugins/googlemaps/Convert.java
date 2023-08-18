@@ -414,38 +414,16 @@ class Convert {
       sink.setFlat(toBoolean(flat));
     }
 
-    final Object markerType = data.get("markerType");
+    final String markerType = data.get("markerType").toString();
     if (markerType == null) {
       throw new IllegalArgumentException("markerType was null");
     }
 
-    switch (markerType.toString()) {
-      case "icon":
-        final Object icon = data.get("icon");
-        if (icon == null) {
-          throw new IllegalArgumentException("markerType was icon but icon was not provided.");
-        }
-        sink.setIcon(toBitmapDescriptor(icon));
-        break;
-      case "price":
-      case "cluster":
-      case "pin_cluster":
-      case "pin_cluster_visited":
-      case "pin_cluster_selected":
-      case "pin_price":
-      case "pin_price_visited":
-      case "pin_price_selected":
-        final Object label = data.get("label");
-        if (label == null) {
-          throw new IllegalArgumentException("markerType was label but label was not provided.");
-        }
-        final Bitmap bitmap = cozy.buildMarker(markerType.toString(), label.toString());
-        sink.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
-        bitmap.recycle();
-        break;
-      default:
-        throw new IllegalArgumentException("markerType must be a pre-selected one.");
-    }
+    final Object icon = data.get("icon");
+
+    final String label = data.get("label").toString();
+
+    sink.setIcon(renderMarkerIcon(cozy, icon, markerType, label, 0f));
 
     final Object infoWindow = data.get("infoWindow");
     if (infoWindow != null) {
@@ -472,6 +450,31 @@ class Convert {
       throw new IllegalArgumentException("markerId was null");
     } else {
       return markerId;
+    }
+  }
+
+  static BitmapDescriptor renderMarkerIcon(CozyMarkerBuilder cozy, Object icon, String markerType, String label, float alpha){
+    switch (markerType.toString()) {
+      case "icon":
+        if (icon == null) {
+          throw new IllegalArgumentException("markerType was icon but icon was not provided.");
+        }
+        return toBitmapDescriptor(icon);
+      case "price":
+      case "cluster":
+      case "pin_cluster":
+      case "pin_cluster_visited":
+      case "pin_cluster_selected":
+      case "pin_price":
+      case "pin_price_visited":
+      case "pin_price_selected":
+        if (label == null) {
+          throw new IllegalArgumentException("markerType was label but label was not provided.");
+        }
+        final Bitmap bitmap = cozy.buildMarker(markerType, label, alpha);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+      default:
+        throw new IllegalArgumentException("markerType must be a pre-selected one.");
     }
   }
 

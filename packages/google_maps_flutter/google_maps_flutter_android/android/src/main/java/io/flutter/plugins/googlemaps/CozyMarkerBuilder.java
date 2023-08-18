@@ -200,31 +200,34 @@ public class CozyMarkerBuilder {
         return marker;
     }
 
-    private Bitmap getMarker(String type, String text) {
-        int defaultMarkerColor = Color.WHITE;
-        int defaultTextColor = Color.BLACK;
-        int selectedMarkerColor = Color.rgb(57, 87, 189);
-        int selectedTextColor = Color.WHITE;
-        int visitedMarkerColor = Color.rgb(248, 249, 245);
-        int visitedTextColor = Color.rgb(110, 110, 100);
+    private Bitmap getMarker(String type, String text, float alpha) {
+        int alphaInt = (int) (alpha * 255);
+        int defaultMarkerColor = Color.argb(alphaInt, 255, 255, 255);
+        int defaultTextColor = Color.argb(alphaInt, 0, 0, 0);
+        int selectedMarkerColor = Color.argb(alphaInt, 57, 87, 189);
+        int selectedTextColor = Color.argb(alphaInt, 255, 255, 255);
+        int visitedMarkerColor = Color.argb(alphaInt, 248, 249, 245);
+        int visitedTextColor = Color.argb(alphaInt, 110, 110, 100);
+
+        String text2 = (String.valueOf(alphaInt));
 
         switch (type) {
             case "cluster":
-                return getClusterBitmap(text);
+                return getClusterBitmap(text2);
             case "price":
-                return getPriceBitmap(text);
+                return getPriceBitmap(text2);
             case "pin_cluster":
-                return getPinBitmap(text, defaultMarkerColor, defaultTextColor, false);
+                return getPinBitmap(text2, defaultMarkerColor, defaultTextColor, false);
             case "pin_cluster_selected":
-                return getPinBitmap(text, selectedMarkerColor, selectedTextColor, false);
+                return getPinBitmap(text2, selectedMarkerColor, selectedTextColor, false);
             case "pin_cluster_visited":
-                return getPinBitmap(text, visitedMarkerColor, visitedTextColor, false);
+                return getPinBitmap(text2, visitedMarkerColor, visitedTextColor, false);
             case "pin_price":
-                return getPinBitmap(text, defaultMarkerColor, defaultTextColor, true);
+                return getPinBitmap(text2, defaultMarkerColor, defaultTextColor, true);
             case "pin_price_selected":
-                return getPinBitmap(text, selectedMarkerColor, selectedTextColor, true);
+                return getPinBitmap(text2, selectedMarkerColor, selectedTextColor, true);
             case "pin_price_visited":
-                return getPinBitmap(text, visitedMarkerColor, visitedTextColor, true);
+                return getPinBitmap(text2, visitedMarkerColor, visitedTextColor, true);
             default:
                 return null;
         }
@@ -240,13 +243,13 @@ public class CozyMarkerBuilder {
         return bitmap.copy(bitmap.getConfig(), true);
     }
 
-    private Bitmap bitmapWithCache(String type, String text) {
-        String key = String.format("%s:%s", type, text);
+    private Bitmap bitmapWithCache(String type, String text, float alpha) {
+        String key = String.format("%s:%s:%s", type, text, alpha);
         final Bitmap bitmap = markerCache.getBitmapFromMemCache(key);
         if (bitmap != null) {
             return bitmap;
         }
-        Bitmap marker = getMarker(type, text);
+        Bitmap marker = getMarker(type, text, alpha);
         markerCache.addBitmapToMemoryCache(key, marker);
         return marker;
     }
@@ -255,12 +258,12 @@ public class CozyMarkerBuilder {
         this.markerCache = isCachingEnabled ? new MarkerCache() : null;
     }
 
-    public Bitmap buildMarker(String type, String text) {
+    public Bitmap buildMarker(String type, String text, float alpha) {
         if (markerCache != null) {
-            final Bitmap marker = bitmapWithCache(type, text);
+            final Bitmap marker = bitmapWithCache(type, text, alpha);
             return copyOnlyBitmapProperties(marker);
         }
-        final Bitmap marker = getMarker(type, text);
+        final Bitmap marker = getMarker(type, text, alpha);
         return copyOnlyBitmapProperties(marker);
     }
 }
