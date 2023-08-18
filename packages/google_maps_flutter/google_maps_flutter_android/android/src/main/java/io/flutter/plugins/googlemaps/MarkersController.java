@@ -34,8 +34,9 @@ class MarkersController {
   private GoogleMap googleMap;
   private final CozyMarkerBuilder cozyMarkerBuilder;
   private boolean markersAnimationEnabled;
-  private final int markersAnimationDuration = 1000;
+  private final int markersAnimationDuration = 5000;
   final Map<String, Boolean> isIconPendingForMarkerId = new HashMap<String, Boolean>();
+  final Map<String, Integer> currentMarkerIndex = new HashMap<String, Integer>();
 
   MarkersController(MethodChannel methodChannel, CozyMarkerBuilder cozyMarkerBuilder) {
     this.markerIdToController = new HashMap<>();
@@ -187,43 +188,70 @@ class MarkersController {
   }
 
 
-  private void addMarker(Object marker) {
-    if (marker == null) {
+  private void addMarker(Object markerObject) {
+    if (markerObject == null) {
       return;
     }
-    MarkerBuilder markerBuilder = new MarkerBuilder();
-    String markerId = Convert.interpretMarkerOptions(marker, markerBuilder, cozyMarkerBuilder);
-    MarkerOptions options = markerBuilder.build();
-    addMarker(markerId, options, markerBuilder.consumeTapEvents(), marker);
-  }
+    final Map<?, ?> data = toMap(markerObject);
 
-  private void addMarker(String markerId, MarkerOptions markerOptions, boolean consumeTapEvents, Object o) {
-    final Marker marker = googleMap
-            .addMarker(markerOptions);
-    final List<BitmapDescriptor> bitmapForFrame = new ArrayList<BitmapDescriptor>();
-    final Map<?, ?> data = toMap(o);
+    final String markerId = data.get("markerId").toString();
+    final int totalNumberOfMarkers = 2;
+    final int framesNumber = 5;
+    List<Marker> markers = new ArrayList<Marker>();
+
+    for(int i = 0; i < totalNumberOfMarkers; i++){
+      MarkerBuilder markerBuilder = new MarkerBuilder();
+      Convert.interpretMarkerOptions(markerObject, markerBuilder, cozyMarkerBuilder);
+      MarkerOptions options = markerBuilder.build();
+      final Marker marker = googleMap
+            .addMarker(options);
+      marker.setVisible(false);
+      marker.setZIndex(i+1);
+      markers.add(marker);
+    }
+
+    markers.get(0).setVisible(true);
+    currentMarkerIndex.put(markerId, 0);
+    
+    final List<BitmapDescriptor> bitmapsForFrame = new ArrayList<BitmapDescriptor>();
 
     final String markerType = data.get("markerType").toString();
     final Object icon = data.get("icon");
     final String label = data.get("label").toString();
 
-    for(int i = 0; i <= 30; i++){
-      final BitmapDescriptor markerIconFrame = Convert.renderMarkerIcon(cozyMarkerBuilder, icon, markerType, label, (float) i/30f);
-      bitmapForFrame.add(markerIconFrame);
+    for(int i = 0; i <= framesNumber; i++){
+      final BitmapDescriptor markerIconFrame = Convert.renderMarkerIcon(cozyMarkerBuilder, icon, markerType, label, (float) i/framesNumber);
+      bitmapsForFrame.add(markerIconFrame);
     }
-    isIconPendingForMarkerId.put(markerId, false);
+
     if (this.markersAnimationEnabled) {
       ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
       fadeIn.setDuration(this.markersAnimationDuration);
       fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
           @Override
           public void onAnimationUpdate(ValueAnimator animation) {
-            if(!isIconPendingForMarkerId.get(markerId)){
-              final int index = (int)((float) animation.getAnimatedValue() * 30);
-              isIconPendingForMarkerId.put(markerId, true);
-              marker.setIcon(bitmapForFrame.get(index));
-              isIconPendingForMarkerId.put(markerId, false);
-            }
+              int animationIndex = (int) ((float) animation.getAnimatedValue() * framesNumber);
+              final BitmapDescriptor bitmapForFrame = bitmapsForFrame.get(animationIndex);
+              
+              final int nextMarkerIndex = (currentMarkerIndex.get(markerId) + 1) % totalNumberOfMarkers;
+              
+              final Marker currentMarker = markers.get(currentMarkerIndex.get(markerId));
+              final Marker nextMarker = markers.get(nextMarkerIndex);
+
+              final float currentMarkerZIndex = currentMarker.getZIndex();
+              final float nextMarkerZIndex = nextMarker.getZIndex();
+
+              if(currentMarkerZIndex > nextMarkerZIndex)
+                if(currentMarkerZIndex - 2 < 0){
+                  nextMarker.setZIndex(currentMarkerZIndex + 1);
+                }else{
+                  currentMarker.setZIndex(currentMarkerZIndex - 2);
+                }
+
+              nextMarker.setVisible(true);
+              nextMarker.setIcon(bitmapForFrame);
+
+              currentMarkerIndex.put(markerId, nextMarkerIndex);
               //marker.setAlpha((float) animation.getAnimatedValue());
           }
       });
@@ -232,9 +260,9 @@ class MarkersController {
       fadeIn.setInterpolator(fadeInInterpolator);
       fadeIn.start();
     }
-    MarkerController controller = new MarkerController(marker, consumeTapEvents);
-    markerIdToController.put(markerId, controller);
-    googleMapsMarkerIdToDartMarkerId.put(marker.getId(), markerId);
+    // MarkerController controller = new MarkerController(marker, consumeTapEvents);
+    // markerIdToController.put(markerId, controller);
+    // googleMapsMarkerIdToDartMarkerId.put(marker.getId(), markerId);
   }
 
   private static Map<?, ?> toMap(Object o) {

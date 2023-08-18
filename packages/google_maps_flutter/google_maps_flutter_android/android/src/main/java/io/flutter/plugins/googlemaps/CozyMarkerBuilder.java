@@ -201,7 +201,7 @@ public class CozyMarkerBuilder {
     }
 
     private Bitmap getMarker(String type, String text, float alpha) {
-        int alphaInt = (int) (alpha * 255);
+        int alphaInt = (int) (255);
         int defaultMarkerColor = Color.argb(alphaInt, 255, 255, 255);
         int defaultTextColor = Color.argb(alphaInt, 0, 0, 0);
         int selectedMarkerColor = Color.argb(alphaInt, 57, 87, 189);
@@ -209,7 +209,7 @@ public class CozyMarkerBuilder {
         int visitedMarkerColor = Color.argb(alphaInt, 248, 249, 245);
         int visitedTextColor = Color.argb(alphaInt, 110, 110, 100);
 
-        String text2 = (String.valueOf(alphaInt));
+        String text2 = (String.valueOf((int)(alpha*100)));
 
         switch (type) {
             case "cluster":
