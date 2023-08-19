@@ -34,7 +34,7 @@ class MarkersController {
   private GoogleMap googleMap;
   private final CozyMarkerBuilder cozyMarkerBuilder;
   private boolean markersAnimationEnabled;
-  private final int markersAnimationDuration = 5000;
+  private final int markersAnimationDuration = 500;
   final Map<String, Boolean> isIconPendingForMarkerId = new HashMap<String, Boolean>();
   final Map<String, Integer> currentMarkerIndex = new HashMap<String, Integer>();
 
@@ -195,9 +195,10 @@ class MarkersController {
     final Map<?, ?> data = toMap(markerObject);
 
     final String markerId = data.get("markerId").toString();
-    final int totalNumberOfMarkers = 2;
-    final int framesNumber = 5;
+    final int totalNumberOfMarkers = 4;
+    final int framesNumber = 15;
     List<Marker> markers = new ArrayList<Marker>();
+    List<String> markersStages = new ArrayList<String>();
 
     for(int i = 0; i < totalNumberOfMarkers; i++){
       MarkerBuilder markerBuilder = new MarkerBuilder();
@@ -208,10 +209,9 @@ class MarkersController {
       marker.setVisible(false);
       marker.setZIndex(i+1);
       markers.add(marker);
-    }
 
-    markers.get(0).setVisible(true);
-    currentMarkerIndex.put(markerId, 0);
+      markersStages.add("INVISIBLE-PRE");
+    }
     
     final List<BitmapDescriptor> bitmapsForFrame = new ArrayList<BitmapDescriptor>();
 
@@ -224,34 +224,65 @@ class MarkersController {
       bitmapsForFrame.add(markerIconFrame);
     }
 
+    //setup
+    markersStages.set(0, "VISIBLE-1");
+    markersStages.set(1, "INVISIBLE-PRE");
+    markersStages.set(2, "-1-INVISIBLE-PRE");
+    markersStages.set(3, "-2-INVISIBLE-PRE");
+
+    markers.get(0).setVisible(true);
+    markers.get(1).setIcon(bitmapsForFrame.get(1));
+    markers.get(2).setIcon(bitmapsForFrame.get(2));
+    markers.get(3).setIcon(bitmapsForFrame.get(3));
+
+
     if (this.markersAnimationEnabled) {
       ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
       fadeIn.setDuration(this.markersAnimationDuration);
       fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
           @Override
           public void onAnimationUpdate(ValueAnimator animation) {
-              int animationIndex = (int) ((float) animation.getAnimatedValue() * framesNumber);
-              final BitmapDescriptor bitmapForFrame = bitmapsForFrame.get(animationIndex);
+              int animationIndex = (int) ((float) animation.getAnimatedValue() * (framesNumber + 2));
+             
               
-              final int nextMarkerIndex = (currentMarkerIndex.get(markerId) + 1) % totalNumberOfMarkers;
-              
-              final Marker currentMarker = markers.get(currentMarkerIndex.get(markerId));
-              final Marker nextMarker = markers.get(nextMarkerIndex);
+              for(int i = 0; i < totalNumberOfMarkers; i++){
+                Marker marker = markers.get(i);
+                String markerStage = markersStages.get(i);
 
-              final float currentMarkerZIndex = currentMarker.getZIndex();
-              final float nextMarkerZIndex = nextMarker.getZIndex();
-
-              if(currentMarkerZIndex > nextMarkerZIndex)
-                if(currentMarkerZIndex - 2 < 0){
-                  nextMarker.setZIndex(currentMarkerZIndex + 1);
-                }else{
-                  currentMarker.setZIndex(currentMarkerZIndex - 2);
+                switch(markerStage){
+                  case "-2-INVISIBLE-PRE":
+                    markerStage = "-1-INVISIBLE-PRE";
+                    break;
+                  case "-1-INVISIBLE-PRE":
+                    markerStage = "INVISIBLE-PRE";
+                    break;
+                  case "INVISIBLE-PRE":
+                    marker.setVisible(true);
+                    markerStage = "VISIBLE-1";
+                    break;
+                  case "VISIBLE-1":
+                    if(animationIndex < framesNumber){
+                      markerStage = "VISIBLE-2";
+                    }
+                    break;
+                  case "VISIBLE-2":
+                    if(animationIndex < framesNumber){
+                      marker.setVisible(false);
+                      markerStage = "INVISIBLE-POST";
+                    }
+                    break;
+                  case "INVISIBLE-POST":
+                    if(animationIndex < framesNumber){
+                      final BitmapDescriptor bitmapForFrame = bitmapsForFrame.get(animationIndex);
+                      marker.setIcon(bitmapForFrame);
+                      marker.setZIndex(marker.getZIndex() + totalNumberOfMarkers);
+                      markerStage = "INVISIBLE-PRE";
+                    }
+                    break;
                 }
+                markersStages.set(i, markerStage);
+              }
 
-              nextMarker.setVisible(true);
-              nextMarker.setIcon(bitmapForFrame);
-
-              currentMarkerIndex.put(markerId, nextMarkerIndex);
               //marker.setAlpha((float) animation.getAnimatedValue());
           }
       });

@@ -136,7 +136,7 @@ public class CozyMarkerBuilder {
         return marker;
     }
 
-    private Bitmap getPinBitmap(String text, int markerColor, int textColor, boolean hasTail) {
+    private Bitmap getPinBitmap(String text, int markerColor, int textColor, boolean hasTail, float widthFactor) {
         // gets the text size based on the font
         Rect rect = new Rect();
         float textSize = getDpFromPx(12f);
@@ -148,7 +148,7 @@ public class CozyMarkerBuilder {
         int paddingHorizontal = Math.round(getDpFromPx(11f));
         int minMarkerWidth = Math.round(getDpFromPx(40f));
         int strokeSize = Math.round(getDpFromPx(1.5f));
-        int markerWidth = rect.width() + (2 * paddingHorizontal) + strokeSize;
+        int markerWidth = (int)((rect.width()) * widthFactor) + (2 * paddingHorizontal) + strokeSize;
         if (markerWidth < minMarkerWidth) {
             markerWidth = minMarkerWidth;
         }
@@ -209,7 +209,9 @@ public class CozyMarkerBuilder {
         int visitedMarkerColor = Color.argb(alphaInt, 248, 249, 245);
         int visitedTextColor = Color.argb(alphaInt, 110, 110, 100);
 
-        String text2 = (String.valueOf((int)(alpha*100)));
+        String text2 = text;
+
+        float widthFactor = (1 + 10 * alpha);
 
         switch (type) {
             case "cluster":
@@ -217,17 +219,17 @@ public class CozyMarkerBuilder {
             case "price":
                 return getPriceBitmap(text2);
             case "pin_cluster":
-                return getPinBitmap(text2, defaultMarkerColor, defaultTextColor, false);
+                return getPinBitmap(text2, defaultMarkerColor, defaultTextColor, false,widthFactor);
             case "pin_cluster_selected":
-                return getPinBitmap(text2, selectedMarkerColor, selectedTextColor, false);
+                return getPinBitmap(text2, selectedMarkerColor, selectedTextColor, false,widthFactor);
             case "pin_cluster_visited":
-                return getPinBitmap(text2, visitedMarkerColor, visitedTextColor, false);
+                return getPinBitmap(text2, visitedMarkerColor, visitedTextColor, false,widthFactor);
             case "pin_price":
-                return getPinBitmap(text2, defaultMarkerColor, defaultTextColor, true);
+                return getPinBitmap(text2, defaultMarkerColor, defaultTextColor, true,widthFactor);
             case "pin_price_selected":
-                return getPinBitmap(text2, selectedMarkerColor, selectedTextColor, true);
+                return getPinBitmap(text2, selectedMarkerColor, selectedTextColor, true,widthFactor);
             case "pin_price_visited":
-                return getPinBitmap(text2, visitedMarkerColor, visitedTextColor, true);
+                return getPinBitmap(text2, visitedMarkerColor, visitedTextColor, true,widthFactor);
             default:
                 return null;
         }
