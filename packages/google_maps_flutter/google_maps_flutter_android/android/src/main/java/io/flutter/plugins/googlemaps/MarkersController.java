@@ -250,7 +250,7 @@ class MarkersController {
                               markerToRemove.remove();
                             }
                   }
-                }, 20);
+                }, 100);
               }
 
               //marker.setAlpha((float) animation.getAnimatedValue());
