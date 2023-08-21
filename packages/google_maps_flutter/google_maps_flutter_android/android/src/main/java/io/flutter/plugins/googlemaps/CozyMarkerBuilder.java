@@ -209,9 +209,9 @@ public class CozyMarkerBuilder {
         int visitedMarkerColor = Color.argb(alphaInt, 248, 249, 245);
         int visitedTextColor = Color.argb(alphaInt, 110, 110, 100);
 
-        String text2 = text;
+        String text2 = ((int)(alpha * 100))+"";
 
-        float widthFactor = (1 + 10 * alpha);
+        float widthFactor = 1;
 
         switch (type) {
             case "cluster":
