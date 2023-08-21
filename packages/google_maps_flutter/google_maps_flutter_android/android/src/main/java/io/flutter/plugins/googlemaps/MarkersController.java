@@ -20,11 +20,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import android.os.*;
 
 import io.flutter.plugin.common.MethodChannel;
 
@@ -37,8 +34,6 @@ class MarkersController {
   private final CozyMarkerBuilder cozyMarkerBuilder;
   private boolean markersAnimationEnabled;
   private final int markersAnimationDuration = 1000;
-  final Map<String, Boolean> isIconPendingForMarkerId = new HashMap<String, Boolean>();
-  final Map<String, Integer> currentMarkerIndex = new HashMap<String, Integer>();
 
   MarkersController(MethodChannel methodChannel, CozyMarkerBuilder cozyMarkerBuilder) {
     this.markerIdToController = new HashMap<>();
@@ -197,23 +192,8 @@ class MarkersController {
     final Map<?, ?> data = toMap(markerObject);
 
     final String markerId = data.get("markerId").toString();
-    final int totalNumberOfMarkers = 4;
+    final int totalNumberOfMarkers = 3;
     final int framesNumber = 30;
-    List<Marker> markers = new ArrayList<Marker>();
-    List<String> markersStages = new ArrayList<String>();
-
-    for(int i = 0; i < totalNumberOfMarkers; i++){
-      MarkerBuilder markerBuilder = new MarkerBuilder();
-      Convert.interpretMarkerOptions(markerObject, markerBuilder, cozyMarkerBuilder);
-      MarkerOptions options = markerBuilder.build();
-      final Marker marker = googleMap
-            .addMarker(options);
-      marker.setVisible(false);
-      marker.setZIndex(i+1);
-      markers.add(marker);
-
-      markersStages.add("INVISIBLE-PRE");
-    }
     
     final List<BitmapDescriptor> bitmapsForFrame = new ArrayList<BitmapDescriptor>();
 
@@ -225,18 +205,19 @@ class MarkersController {
       final BitmapDescriptor markerIconFrame = Convert.renderMarkerIcon(cozyMarkerBuilder, icon, markerType, label, (float) i/framesNumber);
       bitmapsForFrame.add(markerIconFrame);
     }
+    ////
 
-    //setup
-    markersStages.set(0, "VISIBLE-1");
-    markersStages.set(1, "INVISIBLE-PRE");
-    markersStages.set(2, "-1-INVISIBLE-PRE");
-    markersStages.set(3, "-2-INVISIBLE-PRE");
+    MarkerBuilder markerBuilder = new MarkerBuilder();
+    Convert.interpretMarkerOptions(markerObject, markerBuilder, cozyMarkerBuilder);
+    MarkerOptions parentOptions = markerBuilder.build();
 
-    markers.get(0).setVisible(true);
-    markers.get(1).setIcon(bitmapsForFrame.get(1));
-    markers.get(2).setIcon(bitmapsForFrame.get(2));
-    markers.get(3).setIcon(bitmapsForFrame.get(3));
+    Marker firstMarker = googleMap.addMarker(parentOptions);
 
+    final Deque<Marker> markersQueue = new ArrayDeque<Marker>();
+    markersQueue.add(firstMarker);
+
+    final Handler handler = new Handler(Looper.getMainLooper());
+    
 
     if (this.markersAnimationEnabled) {
       ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
@@ -244,45 +225,32 @@ class MarkersController {
       fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
           @Override
           public void onAnimationUpdate(ValueAnimator animation) {
-              int animationIndex = (int) ((float) animation.getAnimatedValue() * (framesNumber + 2));
+              int animationIndex = (int) ((float) animation.getAnimatedValue() * (framesNumber - 1)) + 1;
               Log.d("animationIndex", String.valueOf(animationIndex));
-              
-              for(int i = 0; i < totalNumberOfMarkers; i++){
-                Marker marker = markers.get(i);
-                String markerStage = markersStages.get(i);
 
-                switch(markerStage){
-                  case "-2-INVISIBLE-PRE":
-                    markerStage = "-1-INVISIBLE-PRE";
-                    break;
-                  case "-1-INVISIBLE-PRE":
-                    markerStage = "INVISIBLE-PRE";
-                    break;
-                  case "INVISIBLE-PRE":
-                    marker.setVisible(true);
-                    markerStage = "VISIBLE-1";
-                    break;
-                  case "VISIBLE-1":
-                    if(animationIndex < framesNumber){
-                      markerStage = "VISIBLE-2";
-                    }
-                    break;
-                  case "VISIBLE-2":
-                    if(animationIndex < framesNumber){
-                      marker.setVisible(false);
-                      markerStage = "INVISIBLE-POST";
-                    }
-                    break;
-                  case "INVISIBLE-POST":
-                    if(animationIndex < framesNumber){
-                      final BitmapDescriptor bitmapForFrame = bitmapsForFrame.get(animationIndex);
-                      marker.setIcon(bitmapForFrame);
-                      marker.setZIndex(marker.getZIndex() + totalNumberOfMarkers);
-                      markerStage = "INVISIBLE-PRE";
-                    }
-                    break;
-                }
-                markersStages.set(i, markerStage);
+              if(animationIndex <= framesNumber){
+                parentOptions.icon(bitmapsForFrame.get(animationIndex));
+                Marker newMarker = googleMap.addMarker(parentOptions);
+                markersQueue.add(newMarker);
+              }
+
+              if(markersQueue.
+                size() > totalNumberOfMarkers){
+                  Marker markerToRemove = markersQueue.remove();
+                  markerToRemove.remove();
+              }
+
+              if((float) animation.getAnimatedValue() == 1f){
+                 handler.postDelayed(new Runnable() {
+                  @Override
+                  public void run() {
+                    Log.d("removingAllMarkers", String.valueOf(markersQueue.size()));
+                    while(markersQueue.size() > 1){
+                              Marker markerToRemove = markersQueue.remove();
+                              markerToRemove.remove();
+                            }
+                  }
+                }, 20);
               }
 
               //marker.setAlpha((float) animation.getAnimatedValue());
