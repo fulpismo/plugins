@@ -9,7 +9,7 @@
 
 @interface CozyMarkerBuilder : NSObject
 - (instancetype) initWithCache:(BOOL)useCache;
-- (UIImage *) buildMarker:(NSString *)label withMarkerType:(NSString *)markerType;
+- (UIImage *) buildMarker:(NSString *)label withMarkerType:(NSString *)markerType withAlpha:(CGFloat)alpha;
 
 @property(strong, nonatomic) NSCache *cache;
 @property(strong, nonatomic) NSString *fontPath;

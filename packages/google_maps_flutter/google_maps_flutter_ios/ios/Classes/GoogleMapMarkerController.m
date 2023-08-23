@@ -39,13 +39,13 @@
         float durationInMillis = _markersAnimationDuration;
         float durationInSeconds = durationInMillis/1000;
 
-        CABasicAnimation *fadeIn = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        /*CABasicAnimation *fadeIn = [CABasicAnimation animationWithKeyPath:@"opacity"];
         fadeIn.fromValue = [NSNumber numberWithFloat:0.0];
         fadeIn.toValue = [NSNumber numberWithFloat:1.0];
         fadeIn.duration = durationInSeconds;
         fadeIn.timingFunction = [CAMediaTimingFunction functionWithControlPoints:0.5: 1: 0.89: 1];
 
-        [_marker.layer addAnimation:fadeIn forKey:@"fadeInAnimation"];
+        [_marker.layer addAnimation:fadeIn forKey:@"fadeInAnimation"];*/
     }
     return self;
 }
@@ -65,7 +65,7 @@
 }
 
 - (void)removeMarker {
-    if(self.markersAnimationEnabled){
+   /* if(self.markersAnimationEnabled){
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, self.markersAnimationDuration * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
             [CATransaction begin];
             CABasicAnimation *fadeOut = [CABasicAnimation animationWithKeyPath:@"opacity"];
@@ -86,9 +86,9 @@
             [self.marker.layer addAnimation:fadeOut forKey:@"fadeOutAnimation"];
             [CATransaction commit];
         });
-    }else{
+    }else{*/
         self.marker.map = nil;
-    }
+    //}
 }
 
 - (void)setAlpha:(float)alpha {
@@ -105,6 +105,10 @@
 
 - (void)setFlat:(BOOL)flat {
     self.marker.flat = flat;
+}
+
+- (void)setIconView:(UIImageView *)iconView {
+    self.marker.iconView = iconView;
 }
 
 - (void)setIcon:(UIImage *)icon {
@@ -168,9 +172,23 @@
                                                    reason:@"label not found for icon."
                                                  userInfo:nil];
             }
-    
-            UIImage *image = [[self cozy] buildMarker:label withMarkerType:markerType];
-            [self setIcon:image];
+            //for i in 0...100 in objc {
+            NSMutableArray *images = [NSMutableArray array];
+            for (int i = 0; i <= 30; i++) {
+                UIImage *image = [[self cozy] buildMarker:label withMarkerType:markerType withAlpha: i/30.0f ];
+                [images addObject:image];
+            }
+            //UIImage *animatedImage = [UIImage animatedImageWithImages:images duration:1];
+            UIImageView *animatedImageView = [[UIImageView alloc] initWithImage:[images firstObject]];
+
+            animatedImageView.animationImages = images;
+            animatedImageView.animationRepeatCount = 1;
+            animatedImageView.animationDuration = 1.0f;
+            animatedImageView.image = [images lastObject];
+
+            [animatedImageView startAnimating];
+
+            [self setIconView:animatedImageView];
         }
         
     }

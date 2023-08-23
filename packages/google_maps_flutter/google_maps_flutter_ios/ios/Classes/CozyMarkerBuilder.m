@@ -237,7 +237,9 @@ void CFSafeRelease(CFTypeRef cf) {
     return image;
 }
 
-- (UIImage *)getMarker:(NSString *)label withMarkerType:(NSString *)markerType {
+- (UIImage *)getMarker:(NSString *)label withMarkerType:(NSString *)markerType withAlpha:(CGFloat)alpha {
+    NSString* text = [@((int) (alpha * 100)) stringValue];
+    NSLog(@"getMarker: %@", text);
     if([markerType isEqualToString:@"cluster"]) {
         return [self clusterMarkerImageWithText:label];
     }
@@ -245,7 +247,7 @@ void CFSafeRelease(CFTypeRef cf) {
         return [self priceMarkerImageWithText:label];
     }
     else if([markerType isEqualToString:@"pin_cluster"]) {
-        return [self pinMarkerImageWithText:label withMarkerColor:UIColor.whiteColor withTextColor:UIColor.blackColor withTail:NO];
+        return [self pinMarkerImageWithText:text withMarkerColor:UIColor.whiteColor withTextColor:UIColor.blackColor withTail:NO];
     } else if([markerType isEqualToString:@"pin_cluster_visited"]) {
         return [self pinMarkerImageWithText:label withMarkerColor:UIColor.whiteColor withTextColor:[UIColor colorWithRed:(110.0f/255.0f) green:(110.0f/255.0f) blue:(100.0f/255.0f) alpha:1] withTail:NO];
     }
@@ -253,7 +255,7 @@ void CFSafeRelease(CFTypeRef cf) {
         return [self pinMarkerImageWithText:label withMarkerColor:[UIColor colorWithRed:(57.0f/255.0f) green:(87.0f/255.0f) blue:(189.0f/255.0f) alpha:1] withTextColor:UIColor.whiteColor withTail:NO];
     }
     else if([markerType isEqualToString:@"pin_price"]) {
-        return [self pinMarkerImageWithText:label withMarkerColor:UIColor.whiteColor withTextColor:UIColor.blackColor withTail:YES];
+        return [self pinMarkerImageWithText:text withMarkerColor:UIColor.whiteColor withTextColor:UIColor.blackColor withTail:YES];
     }
     else if([markerType isEqualToString:@"pin_price_visited"]) {
         return [self pinMarkerImageWithText:label withMarkerColor:UIColor.whiteColor withTextColor:[UIColor colorWithRed:(110.0f/255.0f) green:(110.0f/255.0f) blue:(100.0f/255.0f) alpha:1] withTail:YES];
@@ -273,21 +275,21 @@ void CFSafeRelease(CFTypeRef cf) {
     if(cachedImage != nil) {
         return cachedImage;
     }
-    UIImage *image = [self getMarker:label withMarkerType:markerType];
+    UIImage *image = [self getMarker:label withMarkerType:markerType withAlpha:1];
     [[self cache] setObject:image forKey:key];
     return image;
 }
 
-- (UIImage *)buildMarker:(NSString *)label withMarkerType:(NSString *)markerType {
+- (UIImage *)buildMarker:(NSString *)label withMarkerType:(NSString *)markerType withAlpha:(CGFloat)alpha {
     if(label == (id)[NSNull null] || [label isEqualToString:@""]) {
         @throw [NSException exceptionWithName:@"InvalidMarker"
                                        reason:@"no label was provided when expected."
                                      userInfo:nil];
     }
-    if(_useCache == YES) {
-        return [self cacheMarkerWithLabel:label withMarkerType:markerType];
-    }
-    return [self getMarker:label withMarkerType:markerType];;
+    //if(_useCache == YES) {
+    //    return [self cacheMarkerWithLabel:label withMarkerType:markerType];
+    //}
+    return [self getMarker:label withMarkerType:markerType withAlpha:alpha];
 }
 
     
