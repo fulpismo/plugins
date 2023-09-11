@@ -13,6 +13,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import com.caverock.androidsvg.SVG;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -55,20 +57,35 @@ public class CozyMarkerBuilder {
         return pointer;
     }
 
-    private Bitmap getIconBitmap(String svgIcon, int width, int height) {
-        if(svgIcon == null)
+    private Bitmap getIconBitmap(String svgIcon, int width, int height, int rgbColor) {
+        String key = svgIcon + width + height + rgbColor;
+        if(key == null)
             return null;
         
-        final Bitmap bitmap = markerCache.getBitmapFromMemCache(svgIcon);   
+        final Bitmap bitmap = markerCache.getBitmapFromMemCache(key);   
         if (bitmap != null) {
             return bitmap;
         }
 
         try{
             //Needed this because svg doesn't scale if there is fixed width and height
-            String finalSvgIcon = svgIcon.replaceAll("width=\"24\" height=\"24\" ", "");
+            String widthPattern = "(width=\")(.+?)(\")";
+            String heightPattern = "(height=\")(.+?)(\")";
+
+            Matcher widthMatcher = Pattern.compile(widthPattern).matcher(svgIcon);
+            Matcher heightMatcher = Pattern.compile(heightPattern).matcher(svgIcon);
+
+            String finalSvgIcon = svgIcon.replaceAll(widthPattern, "");
+            finalSvgIcon = finalSvgIcon.replaceAll(heightPattern, "");
+
+            String hexColor = String.format("#%06X", (0xFFFFFF & rgbColor));
+            finalSvgIcon = finalSvgIcon.replaceAll("(fill=\")(.+?)(\")", "fill=\""+hexColor+"\"");
+
             SVG  svg = SVG.getFromString(finalSvgIcon);
-            svg.setDocumentViewBox(0,0,24,24);
+            if(widthMatcher.find() && heightMatcher.find()){
+                svg.setDocumentViewBox(0,0,Integer.parseInt(widthMatcher.group(2)),Integer.parseInt(heightMatcher.group(2)));
+            }
+            
 
             Bitmap iconBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(iconBitmap);
@@ -89,10 +106,12 @@ public class CozyMarkerBuilder {
         int defaultMarkerColor = Color.WHITE;
         int defaultTextColor = Color.BLACK;
         int defaultIconCircleColor = Color.rgb(248, 249, 245);
+        int defaultChevronIconColor = Color.BLACK;
 
         int selectedMarkerColor = Color.rgb(57, 87, 189);
         int selectedTextColor = Color.WHITE;
         int selectedIconCircleColor = Color.WHITE;
+        int selectedChevronIconColor = Color.WHITE;
 
         int visualizedMarkerColor = Color.rgb(248, 249, 245);
         int visualizedTextColor = Color.rgb(110, 110, 100);
@@ -101,6 +120,7 @@ public class CozyMarkerBuilder {
         int markerColor = defaultMarkerColor;
         int textColor = defaultTextColor;
         int iconCircleColor = defaultIconCircleColor;
+        int chevronIconColor = defaultChevronIconColor;
 
         if(markerData.isVisualized) {
             markerColor = visualizedMarkerColor;
@@ -111,6 +131,7 @@ public class CozyMarkerBuilder {
             markerColor = selectedMarkerColor;
             textColor = selectedTextColor;
             iconCircleColor = selectedIconCircleColor;
+            chevronIconColor = selectedChevronIconColor;
         }
 
         /* setting constants */
@@ -127,8 +148,14 @@ public class CozyMarkerBuilder {
         // setting constants for icon
         int iconSize =  Math.round(getDpFromPx(16));
         int iconCircleSize =  Math.round(getDpFromPx(24));
+        //TODO: refactor this calc
         int iconLeftPadding =  Math.round(getDpFromPx(5));
         int iconRightPadding =  Math.round(getDpFromPx(3));
+
+        // setting constants for chevron
+        int chevronSize = Math.round(getDpFromPx(24));
+        int chevronRightPadding = Math.round(getDpFromPx(11));
+        int chevronLeftPadding = Math.round(getDpFromPx(8));
 
         /* setting variables */
         // gets the text size based on the font
@@ -138,16 +165,18 @@ public class CozyMarkerBuilder {
         priceMarkerTextStyle.getTextBounds(text, 0, text.length(), textBounds);
 
         // getting icon bitmap
-        Bitmap iconBitmap = getIconBitmap(markerData.icon,iconSize,iconSize);
+        Bitmap iconBitmap = getIconBitmap(markerData.icon,iconSize,iconSize, Color.BLACK);
+        Bitmap chevronBitmap = getIconBitmap(markerData.chevronIcon,chevronSize,chevronSize,chevronIconColor);
 
         // additionalIconWidth to be used on markerWidth
         int iconAdditionalWidth = iconBitmap != null ? iconCircleSize + iconRightPadding : 0;
+        int chevronAdditionalWidth = chevronBitmap != null ? chevronLeftPadding + chevronSize : 0;
 
         // pointerSize to be used on bitmap creation
         int pointerSize = (hasPointer ? pointerHeight : 0);
         
         // setting marker width with a minimum width in case the string size is below the minimum
-        int markerWidth = textBounds.width() + (2 * paddingHorizontal) + (2 * strokeSize) + iconAdditionalWidth;
+        int markerWidth = textBounds.width() + (2 * paddingHorizontal) + (2 * strokeSize) + iconAdditionalWidth + chevronAdditionalWidth;
         if (markerWidth < minMarkerWidth) {
             markerWidth = minMarkerWidth;
         }
@@ -197,7 +226,7 @@ public class CozyMarkerBuilder {
         canvas.drawPath(bubblePath, strokePaint);
        
         // draws the text
-        float dx = getTextXOffset(markerWidth, textBounds) + iconAdditionalWidth/2;
+        float dx = getTextXOffset(markerWidth, textBounds) + iconAdditionalWidth/2 - chevronAdditionalWidth/2;
         float dy = getTextYOffset(markerHeight, textBounds);
 
         canvas.drawText(text, dx, dy, priceMarkerTextStyle);
@@ -216,10 +245,19 @@ public class CozyMarkerBuilder {
             canvas.drawCircle(circleX, circleY, circleRadius, circlePaint);
             
             // Draw the icon itself
+            //rename
             float svgX = iconLeftPadding + strokeSize + (iconCircleSize - iconSize)/2;
+            //refactor this
             float svgY = (bubbleShapeHeight / 2) - (iconSize / 2) + strokeSize/2;
 
             canvas.drawBitmap(iconBitmap, svgX, svgY, null);
+        }
+
+        if (chevronBitmap != null){
+            float chevronX = markerWidth - chevronRightPadding - chevronSize - strokeSize;
+            float chevronY = middleOfMarkerY - chevronSize/2;
+
+            canvas.drawBitmap(chevronBitmap, chevronX, chevronY, null);
         }
 
         return marker;

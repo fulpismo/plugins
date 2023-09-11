@@ -8,6 +8,7 @@
 @interface CozyMarkerData : NSObject
 - (instancetype)initWithLabel:(NSString *)label
                          icon:(NSString *)icon
+                         chevronIcon:(NSString *)chevronIcon
                   hasPointer:(BOOL)hasPointer
                    isSelected:(BOOL)isSelected
                    isVisualized:(BOOL)isVisualized
@@ -17,6 +18,7 @@
 
 @property (nonatomic, strong) NSString *label;
 @property (nonatomic, strong) NSString *icon;
+@property (nonatomic, strong) NSString *chevronIcon;
 @property (nonatomic, strong) NSString *state;
 @property (nonatomic, strong) NSString *variant;
 @property (nonatomic, strong) NSString *size;

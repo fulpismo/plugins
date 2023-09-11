@@ -457,6 +457,7 @@ class Convert {
     final Bitmap bitmap = cozyMarkerBuilder.buildMarker(new CozyMarkerData(
       (String) cozyMarkerData.get("label"),
       (String) cozyMarkerData.get("icon"),
+      (String) cozyMarkerData.get("chevronIcon"),
       (boolean) cozyMarkerData.get("hasPointer"),
       (boolean) cozyMarkerData.get("isSelected"),
       (boolean) cozyMarkerData.get("isVisualized"),

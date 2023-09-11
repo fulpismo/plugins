@@ -210,6 +210,7 @@
 - (void)interpretCozyMarkerData:(NSDictionary *)cozyMarkerDataDict {
     CozyMarkerData *cozyMarkerData = [[CozyMarkerData alloc] initWithLabel:cozyMarkerDataDict[@"label"] 
                                                                 icon:cozyMarkerDataDict[@"icon"]
+                                                                chevronIcon:cozyMarkerDataDict[@"chevronIcon"]
                                                                 hasPointer: [cozyMarkerDataDict[@"hasPointer"] boolValue]
                                                                 isSelected: [cozyMarkerDataDict[@"isSelected"] boolValue]
                                                                 isVisualized: [cozyMarkerDataDict[@"isVisualized"] boolValue]

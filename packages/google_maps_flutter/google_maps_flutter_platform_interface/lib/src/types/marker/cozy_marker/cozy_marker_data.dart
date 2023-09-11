@@ -10,6 +10,7 @@ class CozyMarkerData {
   const CozyMarkerData({
     required this.label,
     this.icon,
+    this.chevronIcon,
     this.isVisualized = false,
     this.isSelected = false,
     this.hasPointer = false,
@@ -23,6 +24,9 @@ class CozyMarkerData {
 
   /// Icon of the marker in svg format.
   final String? icon;
+
+  /// Passes chevronIcon in svg format, if it has one.
+  final String? chevronIcon;
 
   /// Wether marker is in selected state or not.
   final bool isSelected;
@@ -61,6 +65,7 @@ class CozyMarkerData {
     addIfPresent('variant', variant.name);
     addIfPresent('size', size.name);
     addIfPresent('icon', icon);
+    addIfPresent('chevronIcon', chevronIcon);
   
     return json;
   }
@@ -81,7 +86,8 @@ class CozyMarkerData {
         state == other.state &&
         variant == other.variant &&
         size == other.size &&
-        icon == other.icon;
+        icon == other.icon && 
+        chevronIcon == other.chevronIcon;
   }
 
   @override
@@ -94,11 +100,12 @@ class CozyMarkerData {
         variant,
         size,
         icon,
+        chevronIcon,
       );
 
   @override
   String toString() {
-    return 'CozyMarkerData{ label: $label, isSelected: $isSelected, isVisualized: $isVisualized, hasPointer: $hasPointer, state: ${state.name}, variant: ${variant.name}, size: ${size.name}, icon: $icon }';
+    return 'CozyMarkerData{ label: $label, isSelected: $isSelected, isVisualized: $isVisualized, hasPointer: $hasPointer, state: ${state.name}, variant: ${variant.name}, size: ${size.name}, icon: $icon, chevronIcon: $chevronIcon}';
   }
 }
 
