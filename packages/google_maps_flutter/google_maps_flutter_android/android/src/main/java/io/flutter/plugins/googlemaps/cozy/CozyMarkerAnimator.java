@@ -40,6 +40,7 @@ public class CozyMarkerAnimator {
     public CozyMarkerAnimator(Context context, CozyMarkerBuilder cozyMarkerBuilder){
         this.cozyMarkerBuilder = cozyMarkerBuilder;
         deviceFPS = getDeviceFPS(context);
+        Log.d("CozyMarkerAnimator", "deviceFPS: " + deviceFPS);
     }
 
     private float getDeviceFPS(Context context){
