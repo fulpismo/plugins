@@ -17,6 +17,7 @@ class CozyMarkerInterpolator {
         // interpolate geometry
         CozyMarkerElement interpolatedCanvas = interpolateCozyMarkerElement(startCozyMarkerElements.canvas, endCozyMarkerElements.canvas, step);
         CozyMarkerElement interpolatedBubble = interpolateCozyMarkerElement(startCozyMarkerElements.bubble, endCozyMarkerElements.bubble, step);
+        CozyMarkerElement interpolatedShadowBubble = interpolateCozyMarkerElement(startCozyMarkerElements.shadowBubble, endCozyMarkerElements.shadowBubble, step);
         CozyMarkerElement interpolatedIcon = interpolateCozyMarkerElement(startCozyMarkerElements.icons[0], endCozyMarkerElements.icons[0], step);
         CozyMarkerElement interpolatedIconCircle = interpolateCozyMarkerElement(startCozyMarkerElements.iconCircle, endCozyMarkerElements.iconCircle, step);
         CozyMarkerElement interpolatedPointer = interpolateCozyMarkerElement(startCozyMarkerElements.pointer, endCozyMarkerElements.pointer, step);
@@ -28,7 +29,7 @@ class CozyMarkerInterpolator {
         CozyMarkerElement[] interpolatedLabels = interpolateLabel(interpolatedLabel, (String) startCozyMarkerElements.labels[0].data, (String) endCozyMarkerElements.labels[0].data, step);
         CozyMarkerElement[] interpolatedIcons = interpolateIcons(interpolatedIcon, (Bitmap) startCozyMarkerElements.icons[0].data, (Bitmap) endCozyMarkerElements.icons[0].data, step);
 
-        return new CozyMarkerElements(interpolatedCanvas, interpolatedBubble, interpolatedCounterBubble, interpolatedLabels, interpolatedIcons, interpolatedIconCircle, interpolatedPointer);
+        return new CozyMarkerElements(interpolatedCanvas, interpolatedBubble, interpolatedShadowBubble, interpolatedCounterBubble, interpolatedLabels, interpolatedIcons, interpolatedIconCircle, interpolatedPointer);
     }
 
     private CozyMarkerElement[] interpolateLabel(CozyMarkerElement interpolatedLabel, String startText, String endText, float step) {

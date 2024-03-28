@@ -2,6 +2,7 @@ package io.flutter.plugins.googlemaps.cozy;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -28,6 +29,7 @@ import io.flutter.plugins.googlemaps.R;
 public class CozyMarkerBuilder {
     private final Typeface font;
     private final float strokeSize;
+    private final float shadowBlur;
     private final MarkerCache markerCache;
 
     private final CozyMarkerElementsBuilder cozyMarkerElementsBuilder;
@@ -37,6 +39,7 @@ public class CozyMarkerBuilder {
         markerCache = new MarkerCache();
         font = ResourcesCompat.getFont(context, R.font.oatmealpro2_semibold);
         strokeSize = CozyMarkerElementsBuilder.getDpFromPx(1.5f);
+        shadowBlur = CozyMarkerElementsBuilder.getDpFromPx(4f);
 
         cozyMarkerElementsBuilder = new CozyMarkerElementsBuilder(font, markerCache, strokeSize);
         cozyMarkerInterpolator = new CozyMarkerInterpolator(font);
@@ -50,6 +53,16 @@ public class CozyMarkerBuilder {
         paint.setAntiAlias(true);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setAlpha((int) (alpha * 255));
+        return paint;
+    }
+
+    private Paint getShadowPaint(int color, float alpha) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setAlpha((int) (alpha * 255));
+        paint.setMaskFilter(new BlurMaskFilter(shadowBlur, BlurMaskFilter.Blur.NORMAL));
+        paint.setAntiAlias(true);
         return paint;
     }
 
@@ -98,12 +111,21 @@ public class CozyMarkerBuilder {
         strokePaint.setColor(markerBubble.strokeColor);
         strokePaint.setStrokeWidth(strokeSize);
         strokePaint.setStrokeCap(Paint.Cap.ROUND);
+        
+        // create canvas
+        Canvas canvas = new Canvas(marker);
+
+        // draws elevation shadow
+        if (cozyElements.shadowBubble.alpha != 0) {
+            Path shadowPath = new Path();
+            shadowPath.addRoundRect(cozyElements.shadowBubble.bounds, shapeBorderRadius, shapeBorderRadius, Path.Direction.CW);
+            canvas.drawPath(shadowPath, getShadowPaint(cozyElements.shadowBubble.fillColor, cozyElements.shadowBubble.alpha));
+        }
 
         // draws the bubble with the pointer
-        Canvas canvas = new Canvas(marker);
         canvas.drawPath(bubblePath, fillPaint);
         canvas.drawPath(bubblePath, strokePaint);
-
+        
         // draws the counter bubble
         if (counterBubble.bounds != null) {
             Path path = new Path();

@@ -22,11 +22,12 @@
 @end
 
 @implementation CozyMarkerElements
-- (instancetype)initWithCanvas:(CozyMarkerElement *)canvas bubble:(CozyMarkerElement *)bubble labels:(NSArray<CozyMarkerElement *> *)labels counter:(CozyMarkerElement *)counter icon:(CozyMarkerElement *)icon iconCircle:(CozyMarkerElement *)iconCircle pointer:(CozyMarkerElement *)pointer {
+- (instancetype)initWithCanvas:(CozyMarkerElement *)canvas bubble:(CozyMarkerElement *)bubble shadowBubble:(CozyMarkerElement *)shadowBubble labels:(NSArray<CozyMarkerElement *> *)labels counter:(CozyMarkerElement *)counter icon:(CozyMarkerElement *)icon iconCircle:(CozyMarkerElement *)iconCircle pointer:(CozyMarkerElement *)pointer {
     self = [super init];
     if (self) {
         _canvas = canvas;
         _bubble = bubble;
+        _shadowBubble = shadowBubble;
         _counter = counter;
         _icon = icon;
         _iconCircle = iconCircle;

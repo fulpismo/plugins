@@ -311,6 +311,7 @@ public class Convert {
                     (String) cozyMarkerData.get("icon"),
                     (String) cozyMarkerData.get("counter"),
                     (boolean) cozyMarkerData.get("hasPointer"),
+                    (boolean) cozyMarkerData.get("hasElevation"),
                     (boolean) cozyMarkerData.get("isSelected"),
                     (boolean) cozyMarkerData.get("isVisualized"),
                     (String) cozyMarkerData.get("state"),

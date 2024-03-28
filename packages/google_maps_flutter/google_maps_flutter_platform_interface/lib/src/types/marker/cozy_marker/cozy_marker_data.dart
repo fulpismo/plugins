@@ -12,6 +12,7 @@ class CozyMarkerData {
     this.isVisualized = false,
     this.isSelected = false,
     this.hasPointer = false,
+    this.hasElevation = false,
     this.state = CozyMarkerState.defaultState,
     this.variant = CozyMarkerVariant.defaultVariant,
     this.size = CozyMarkerSize.small,
@@ -36,6 +37,9 @@ class CozyMarkerData {
   /// Wether marker has a little pointer below it or not.
   final bool hasPointer;
 
+  /// Wether marker has elevation or not.
+  final bool hasElevation;
+
   /// State of the marker
   /// It can have either default or pressed state.
   final CozyMarkerState state;
@@ -43,7 +47,11 @@ class CozyMarkerData {
   /// Variant can be default or special. It affects specially the icon of the marker.
   final CozyMarkerVariant variant;
 
-  /// Size can be small or big.
+  /// Size can be:
+  /// - Mini
+  /// - MiniDot
+  /// - Small
+  /// - Big
   final CozyMarkerSize size;
 
   /// Wether marker has animated transitions or not.
@@ -63,6 +71,7 @@ class CozyMarkerData {
     addIfPresent('isSelected', isSelected);
     addIfPresent('isVisualized', isVisualized);
     addIfPresent('hasPointer', hasPointer);
+    addIfPresent('hasElevation', hasElevation);
     addIfPresent('state', state.name);
     addIfPresent('variant', variant.name);
     addIfPresent('size', size.name);
@@ -86,6 +95,7 @@ class CozyMarkerData {
         isSelected == other.isSelected &&
         isVisualized == other.isVisualized &&
         hasPointer == other.hasPointer &&
+        hasElevation == other.hasElevation &&
         state == other.state &&
         variant == other.variant &&
         size == other.size &&
@@ -95,12 +105,13 @@ class CozyMarkerData {
   }
 
   @override
-  int get hashCode => Object.hash(label, isSelected, isVisualized, hasPointer,
+  int get hashCode => Object.hash(label, isSelected,
+   isVisualized, hasPointer, hasElevation,
       state, variant, size, icon, counter, isAnimated);
 
   @override
   String toString() {
-    return 'CozyMarkerData{ label: $label, isSelected: $isSelected, isVisualized: $isVisualized, hasPointer: $hasPointer, state: ${state.name}, variant: ${variant.name}, size: ${size.name}, icon: $icon, isAnimated: $isAnimated, counter: $counter }';
+    return 'CozyMarkerData{ label: $label, isSelected: $isSelected, isVisualized: $isVisualized, hasPointer: $hasPointer, state: ${state.name}, hasElevation:${hasElevation} variant: ${variant.name}, size: ${size.name}, icon: $icon, isAnimated: $isAnimated, counter: $counter }';
   }
 }
 
@@ -131,6 +142,12 @@ enum CozyMarkerVariant {
 /// - small
 /// - big
 enum CozyMarkerSize {
+  /// Mini pin
+  mini,
+
+  /// Mini pin as a dot
+  miniDot,
+
   /// Small size of the marker.
   small,
 
