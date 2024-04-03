@@ -10,6 +10,7 @@
 
 @interface CozyMarkerElementsBuilder : NSObject
 - (instancetype) initWithFontPath: (NSString *)fontPath strokeSize:(CGFloat)strokeSize;
+- (BOOL)isMiniMarker:(NSString *)size;
 - (CozyMarkerElements *)cozyElementsFromData:(CozyMarkerData *)data;
 
 @property(strong, nonatomic) NSString *fontPath;

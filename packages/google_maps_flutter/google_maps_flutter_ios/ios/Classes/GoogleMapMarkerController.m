@@ -227,6 +227,7 @@
                                                                    counter:cozyMarkerDataDict[@"counter"]
                                                                       icon:cozyMarkerDataDict[@"icon"]
                                                                 hasPointer: [cozyMarkerDataDict[@"hasPointer"] boolValue]
+                                                              hasElevation: [cozyMarkerDataDict[@"hasElevation"] boolValue]
                                                                 isSelected: [cozyMarkerDataDict[@"isSelected"] boolValue]
                                                               isVisualized: [cozyMarkerDataDict[@"isVisualized"] boolValue]
                                                                      state: cozyMarkerDataDict[@"state"]

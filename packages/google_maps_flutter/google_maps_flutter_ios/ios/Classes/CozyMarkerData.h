@@ -10,6 +10,7 @@
                       counter:(NSString *)counter
                          icon:(NSString *)icon
                    hasPointer:(BOOL)hasPointer
+                 hasElevation:(BOOL)hasElevation
                    isSelected:(BOOL)isSelected
                  isVisualized:(BOOL)isVisualized
                         state:(NSString *)state
@@ -24,6 +25,7 @@
 @property (nonatomic, strong) NSString *variant;
 @property (nonatomic, strong) NSString *size;
 @property (nonatomic, assign) BOOL hasPointer;
+@property (nonatomic, assign) BOOL hasElevation;
 @property (nonatomic, assign) BOOL isSelected;
 @property (nonatomic, assign) BOOL isVisualized;
 @property (nonatomic, assign) BOOL isAnimated;

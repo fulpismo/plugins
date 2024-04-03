@@ -13,6 +13,7 @@
                       counter:(NSString *)counter
                          icon:(NSString *)icon
                    hasPointer:(BOOL)hasPointer
+                 hasElevation:(BOOL)hasElevation
                    isSelected:(BOOL)isSelected
                  isVisualized:(BOOL)isVisualized
                         state:(NSString *)state
@@ -26,6 +27,7 @@
         _counter = counter;
         _icon = icon;
         _hasPointer = hasPointer;
+        _hasElevation = hasElevation;
         _isSelected = isSelected;
         _isVisualized = isVisualized;
         _state = state;
@@ -45,6 +47,7 @@
             self.variant,
             self.size,
             self.hasPointer ? @"YES" : @"NO",
+            self.hasElevation ? @"YES" : @"NO",
             self.isSelected ? @"YES" : @"NO",
             self.isVisualized ? @"YES" : @"NO",
             self.isAnimated ? @"YES" : @"NO"

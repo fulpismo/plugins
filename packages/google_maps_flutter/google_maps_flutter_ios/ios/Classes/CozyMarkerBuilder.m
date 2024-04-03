@@ -23,6 +23,7 @@
         _fontPath = [self loadCozyFont];
         _cache = [[NSCache alloc] init];
         _strokeSize = 3;
+        _shadowBlurSize = 4;
         
         _cozyMarkerInterpolator = [[CozyMarkerInterpolator alloc] init];
         _cozyMarkerElementsBuilder = [[CozyMarkerElementsBuilder alloc] initWithFontPath:_fontPath strokeSize:self.strokeSize];
@@ -98,6 +99,7 @@ void CFSafeRelease(CFTypeRef cf) {
 - (UIImage *)getMarkerBitmapFromElements:(CozyMarkerElements *)cozyElements {
     CozyMarkerElement *canvasElement = cozyElements.canvas;
     CozyMarkerElement *bubble = cozyElements.bubble;
+    CozyMarkerElement *shadowBubble = cozyElements.shadowBubble;
     NSArray < CozyMarkerElement * > *labels = cozyElements.labels;
     CozyMarkerElement *icon = cozyElements.icon;
     CozyMarkerElement *iconCircle = cozyElements.iconCircle;
@@ -115,6 +117,14 @@ void CFSafeRelease(CFTypeRef cf) {
         // setting colors and stroke
         CGContextSetAlpha(rendererContext.CGContext, 1.0);
         CGContextSetFillColorWithColor(rendererContext.CGContext, bubble.fillColor.CGColor);
+
+        // setting shadow if exists
+        if(shadowBubble.alpha != 0) {
+            UIColor *shadowColor = [shadowBubble.fillColor colorWithAlphaComponent:shadowBubble.alpha];
+            CGFloat deltaX = shadowBubble.bounds.origin.x - bubble.bounds.origin.x;
+            CGFloat deltaY = shadowBubble.bounds.origin.y - bubble.bounds.origin.y;
+            CGContextSetShadowWithColor(rendererContext.CGContext, CGSizeMake(deltaX,  deltaY), self.shadowBlurSize, shadowColor.CGColor);
+        }
         CGContextSetStrokeColorWithColor(rendererContext.CGContext, bubble.strokeColor.CGColor);
         CGContextSetLineJoin(rendererContext.CGContext, 0);
         
@@ -138,6 +148,11 @@ void CFSafeRelease(CFTypeRef cf) {
         [bubblePath setLineWidth:self.strokeSize];
         [bubblePath stroke];
         [bubblePath fill];
+
+        // resetting shadow
+        if(shadowBubble.alpha != 0) {
+            CGContextSetShadowWithColor(rendererContext.CGContext, CGSizeMake(0,  2.0f), 4.0f, nil);
+        }
         
         // draws the counter bubble
         if (counter.data != NULL) {

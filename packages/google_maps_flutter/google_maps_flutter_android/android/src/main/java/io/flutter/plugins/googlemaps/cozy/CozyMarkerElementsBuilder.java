@@ -88,12 +88,25 @@ class CozyMarkerElementsBuilder {
         return originalSvg.replaceAll("(fill=\")(.+?)(\")", "fill=\"" + hexColor + "\"");
     }
 
+    private boolean isMiniMarker(String size) {
+        return size.equals("mini") || size.equals("miniDot");
+    }
+
     public CozyMarkerElements cozyElementsFromData(CozyMarkerData markerData) {
+        
         String text = markerData.label;
         String counterText = markerData.counter;
 
         boolean hasPointer = markerData.hasPointer;
         boolean hasCounter = counterText != null && !counterText.isEmpty();
+        boolean hasElevation = markerData.hasElevation;
+
+        if (isMiniMarker(markerData.size)) {
+            text = "";
+            counterText = null;
+            hasPointer = false;
+            hasCounter = false;
+        }
 
         /* setting colors */
         final int defaultMarkerColor = Color.WHITE;
@@ -146,12 +159,21 @@ class CozyMarkerElementsBuilder {
             iconColor = specialIconColor;
         }
 
+        if (isMiniMarker(markerData.size)) {
+           strokeColor = Color.rgb(175, 179, 165);
+        }
+
         /* setting constants */
         // setting global constants
         final float paddingVertical = getDpFromPx(12);
         final float paddingHorizontal = getDpFromPx(11.5f);
         final float minMarkerWidth = getDpFromPx(40);
         final float strokeSize = getDpFromPx(1.5f);
+        final float elevation = hasElevation ? getDpFromPx(4f) : 0;
+        final float totalStrokeSize = strokeSize + elevation;
+        final float shadowDisplacement = getDpFromPx(3f);
+        final float miniPinRadius = getDpFromPx(4.5f);
+        final float miniPinWidth = getDpFromPx(14);
 
         // setting constants for counter
         final float counterBubblePadding = getDpFromPx(6);
@@ -212,59 +234,80 @@ class CozyMarkerElementsBuilder {
             markerWidth = minMarkerWidth;
         }
 
+        if(isMiniMarker(markerData.size)) {
+            if(markerData.size.equals("mini")) {
+                markerHeight = miniPinRadius * 2 + (2f * strokeSize);
+                markerWidth = miniPinWidth + (2f * strokeSize);
+            }
+            if(markerData.size.equals("miniDot")) {
+                markerHeight = miniPinRadius * 2 + (2f * strokeSize);
+                markerWidth = miniPinRadius * 2 + (2f * strokeSize);
+            }
+            bubbleShapeHeight = markerHeight - strokeSize;
+        }
+
+        float canvasWidth = markerWidth + (2 * elevation);
+        float canvasHeight = markerHeight + (2 * elevation) + pointerSize;
+
         // marker bubble coordinates
-        float bubbleShapeX = strokeSize / 2f;
-        float bubbleShapeY = strokeSize / 2f;
+        float bubbleShapeX = totalStrokeSize / 2f;
+        float bubbleShapeY = totalStrokeSize / 2f;
         float bubbleShapeWidth = markerWidth - strokeSize;
 
         // counter bubble coordinates
-        float counterBubbleShapeX = markerWidth - strokeSize
+        float counterBubbleShapeX = canvasWidth - totalStrokeSize
                 - counterSummaryWidth - counterBubblePadding;
-        float counterBubbleShapeY = counterBubblePadding + strokeSize / 2f;
+        float counterBubbleShapeY = counterBubblePadding + totalStrokeSize / 2f;
 
         // counter text coordinates and size
         float counterTextWidth = counterTextBounds.width();
         float counterTextHeight = textSize;
         float counterTextDx = counterBubbleShapeX +
                 (counterSummaryWidth / 2f) - (counterTextWidth / 2f);
-        float counterTextDy = getTextYOffset(markerHeight, counterTextBounds);
+        float counterTextDy = getTextYOffset(canvasHeight - pointerSize, counterTextBounds);
 
         // other important variables
-        float middleOfMarkerY = (bubbleShapeHeight / 2f) + strokeSize / 2f;
+        float middleOfMarkerY = (bubbleShapeHeight / 2f) + totalStrokeSize / 2f;
 
         // text coordinates
-        float textDx = getTextXOffset(markerWidth, textBounds) + iconAdditionalWidth / 2f
+        float textDx = getTextXOffset(canvasWidth, textBounds) + iconAdditionalWidth / 2f
                 - counterSummaryWidth / 2f;
-        float textDy = getTextYOffset(markerHeight, textBounds);
+        float textDy = getTextYOffset(canvasHeight - pointerSize, textBounds);
         float textHeight = textSize;
         float textWidth = textBounds.width();
 
         // Icon coordinates
-        float iconX = iconLeftPadding + strokeSize + (iconCircleSize - iconSize) / 2f;
-        float iconY = (bubbleShapeHeight / 2f) - (iconSize / 2f) + strokeSize / 2f;
+        float iconX = iconLeftPadding + totalStrokeSize + (iconCircleSize - iconSize) / 2f;
+        float iconY = (bubbleShapeHeight / 2f) - (iconSize / 2f) + totalStrokeSize / 2f;
         float iconWidth = iconSize;
         float iconHeight = iconSize;
 
         // Icon circle coordinates
-        float circleX = iconLeftPadding + strokeSize + iconCircleSize / 2f - iconCircleSize / 2f;
+        float circleX = iconLeftPadding + totalStrokeSize + iconCircleSize / 2f - iconCircleSize / 2f;
         float circleY = middleOfMarkerY - iconCircleSize / 2f;
         float circleWidth = iconCircleSize;
         float circleHeight = iconCircleSize;
 
         // Pointer coordinates
-        float pointerX = markerWidth / 2f - pointerWidth;
-        float pointerY = markerHeight - strokeSize;
+        float pointerX = canvasWidth / 2f - pointerWidth;
+        float pointerY = canvasHeight - pointerSize - totalStrokeSize;
 
         return new CozyMarkerElements(
                 // Canvas
                 new CozyMarkerElement(
-                        new RectF(0, 0, markerWidth, markerHeight + pointerSize)
+                        new RectF(0, 0, canvasWidth, canvasHeight)
                 ),
                 // Bubbles
                 new CozyMarkerElement(
                         new RectF(bubbleShapeX, bubbleShapeY, bubbleShapeX + bubbleShapeWidth, bubbleShapeY + bubbleShapeHeight),
                         markerColor,
                         strokeColor
+                ),
+                // Shadow bubble
+                new CozyMarkerElement(
+                        new RectF(bubbleShapeX, bubbleShapeY + shadowDisplacement, bubbleShapeX + bubbleShapeWidth, bubbleShapeY + bubbleShapeHeight + shadowDisplacement),
+                        Color.BLACK,
+                        hasElevation ? 0.3f : 0.0f
                 ),
                 // Counter bubble
                 new CozyMarkerElement(

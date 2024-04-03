@@ -21,6 +21,7 @@
 @property(strong, nonatomic) CozyMarkerElementsBuilder *cozyMarkerElementsBuilder;
 @property(strong, nonatomic) CozyMarkerInterpolator *cozyMarkerInterpolator;
 @property(nonatomic, assign) CGFloat strokeSize;
+@property(nonatomic, assign) CGFloat shadowBlurSize;
 @property(nonatomic, assign) BOOL useCache;
 @end
 

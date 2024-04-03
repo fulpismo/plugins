@@ -14,6 +14,7 @@
 - (CozyMarkerElements *)getInterpolatedMarkerElementsWithStart:(CozyMarkerElements *)start end:(CozyMarkerElements *)end step:(CGFloat)step {
     CozyMarkerElement *interpolatedCanvas = [self interpolateCozyMarkerElementWithStart:start.canvas end:end.canvas step:step];
     CozyMarkerElement *interpolatedBubble = [self interpolateCozyMarkerElementWithStart:start.bubble end:end.bubble step:step];
+    CozyMarkerElement *interpolatedShadowBubble = [self interpolateCozyMarkerElementWithStart:start.shadowBubble end:end.shadowBubble step:step];
     CozyMarkerElement *interpolatedIcon = [self interpolateCozyMarkerElementWithStart:start.icon end:end.icon step:step];
     CozyMarkerElement *interpolatedIconCircle = [self interpolateCozyMarkerElementWithStart:start.iconCircle end:end.iconCircle step:step];
     CozyMarkerElement *interpolatedPointer = [self interpolateCozyMarkerElementWithStart:start.pointer end:end.pointer step:step];
@@ -23,7 +24,7 @@
     NSArray<CozyMarkerElement *> *interpolatedLabels = [self interpolateLabelWithInterpolatedLabel:interpolatedLabel startText:start.labels[0].data endText:end.labels[0].data step:step];
     interpolatedIcon.data = [self interpolateIconsWithStart:start.icon.data end:end.icon.data step:step];
     
-    return [[CozyMarkerElements alloc] initWithCanvas:interpolatedCanvas bubble:interpolatedBubble labels:interpolatedLabels counter:interpolatedCounter icon:interpolatedIcon  iconCircle:interpolatedIconCircle pointer:interpolatedPointer];
+    return [[CozyMarkerElements alloc] initWithCanvas:interpolatedCanvas bubble:interpolatedBubble shadowBubble:interpolatedShadowBubble labels:interpolatedLabels counter:interpolatedCounter icon:interpolatedIcon  iconCircle:interpolatedIconCircle pointer:interpolatedPointer];
 }
 
 - (CozyMarkerElement *)interpolateCozyMarkerElementWithStart:(CozyMarkerElement *)start end:(CozyMarkerElement *)end step:(CGFloat)step {
