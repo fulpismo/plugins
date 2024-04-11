@@ -44,10 +44,10 @@
     UIColor *const defaultMarkerColor = UIColor.whiteColor;
     UIColor *const defaultTextColor = UIColor.blackColor;
     UIColor *const defaultStrokeColor = [UIColor colorWithRed:
-                                         217.0f / 255.0f
-                                                        green:(219.0f /
+                                         215.0f / 255.0f
+                                                        green:(215.0f /
                                                                255.0f) blue:(
-                                                                             208.0f /
+                                                                             221.0f /
                                                                              255.0f)                             alpha:1];
     
     UIColor *const defaultIconCircleColor = [UIColor colorWithRed:(
@@ -78,11 +78,11 @@
                     245.0f /
                     255.0f)                                 alpha:1];
     
-    UIColor *const visualizedMarkerColor = [UIColor colorWithRed:(217.0f / 255.0f) green:(219.0f /
+    UIColor *const visualizedMarkerColor = [UIColor colorWithRed:(215.0f / 255.0f) green:(215.0f /
                                                                                           255.0f) blue:(
-                                                                                                        208.0f / 255.0f) alpha:1];
+                                                                                                        221.0f / 255.0f) alpha:1];
     UIColor *const visualizedTextColor = UIColor.blackColor;
-    UIColor *const visualizedStrokeColor = [UIColor colorWithRed:(197.0f / 255.0f) green:(201.0f / 255.0f) blue:(186.0f / 255.0f) alpha:1];
+    UIColor *const visualizedStrokeColor = [UIColor colorWithRed:(215.0f / 255.0f) green:(215.0f / 255.0f) blue:(221.0f / 255.0f) alpha:1];
     UIColor *const visualizedIconCircleColor = UIColor.whiteColor;
     UIColor *const visualizedCounterBubbleColor = [UIColor colorWithRed:(
                     248.0f / 255.0f)
