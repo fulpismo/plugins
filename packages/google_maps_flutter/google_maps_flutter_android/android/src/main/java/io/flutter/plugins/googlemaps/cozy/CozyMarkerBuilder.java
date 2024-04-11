@@ -13,6 +13,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.Matrix;
 
 import com.caverock.androidsvg.SVG;
 
@@ -74,6 +75,7 @@ public class CozyMarkerBuilder {
         final CozyMarkerElement pointer = cozyElements.pointer;
         final CozyMarkerElement markerBubble = cozyElements.bubble;
         final CozyMarkerElement counterBubble = cozyElements.counterBubble;
+        final CozyMarkerElement shadowBubble = cozyElements.shadowBubble;
 
         /* start of drawing */
         // creates the marker bitmap
@@ -116,10 +118,17 @@ public class CozyMarkerBuilder {
         Canvas canvas = new Canvas(marker);
 
         // draws elevation shadow
-        if (cozyElements.shadowBubble.alpha != 0) {
+        if (shadowBubble.alpha != 0) {
             Path shadowPath = new Path();
-            shadowPath.addRoundRect(cozyElements.shadowBubble.bounds, shapeBorderRadius, shapeBorderRadius, Path.Direction.CW);
-            canvas.drawPath(shadowPath, getShadowPaint(cozyElements.shadowBubble.fillColor, cozyElements.shadowBubble.alpha));
+            shadowPath.set(bubblePath);
+
+            Matrix matrix = new Matrix();
+            float dy = shadowBubble.bounds.top - markerBubble.bounds.top;
+            matrix.setTranslate(0, dy);
+
+            // Apply the transformation to the path
+            shadowPath.transform(matrix);
+            canvas.drawPath(shadowPath, getShadowPaint(shadowBubble.fillColor, shadowBubble.alpha));
         }
 
         // draws the bubble with the pointer
