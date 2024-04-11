@@ -169,10 +169,10 @@ class CozyMarkerElementsBuilder {
         final float paddingHorizontal = getDpFromPx(11.5f);
         final float minMarkerWidth = getDpFromPx(40);
         final float strokeSize = getDpFromPx(1.5f);
-        final float elevation = hasElevation ? getDpFromPx(4f) : 0;
+        final float elevation = hasElevation ? getDpFromPx(5f) : 0;
         final float totalStrokeSize = strokeSize + elevation;
-        final float shadowDisplacement = getDpFromPx(3f);
-        final float miniPinRadius = getDpFromPx(4.5f);
+        final float shadowDisplacement = getDpFromPx(2f);
+        final float miniPinRadius = getDpFromPx(4f);
         final float miniPinWidth = getDpFromPx(14);
 
         // setting constants for counter
@@ -246,8 +246,8 @@ class CozyMarkerElementsBuilder {
             bubbleShapeHeight = markerHeight - strokeSize;
         }
 
-        float canvasWidth = markerWidth + (2 * elevation);
-        float canvasHeight = markerHeight + (2 * elevation) + pointerSize;
+        float canvasWidth = markerWidth + elevation;
+        float canvasHeight = markerHeight + elevation + pointerSize;
 
         // marker bubble coordinates
         float bubbleShapeX = totalStrokeSize / 2f;
@@ -290,7 +290,9 @@ class CozyMarkerElementsBuilder {
 
         // Pointer coordinates
         float pointerX = canvasWidth / 2f - pointerWidth;
-        float pointerY = canvasHeight - pointerSize - totalStrokeSize;
+        float pointerY = canvasHeight - pointerSize - totalStrokeSize + elevation / 2f;
+
+        float shadowAlpha = hasElevation ? isMiniMarker(markerData.size) ? 0.2f : 0.15f : 0.0f;
 
         return new CozyMarkerElements(
                 // Canvas
@@ -307,7 +309,7 @@ class CozyMarkerElementsBuilder {
                 new CozyMarkerElement(
                         new RectF(bubbleShapeX, bubbleShapeY + shadowDisplacement, bubbleShapeX + bubbleShapeWidth, bubbleShapeY + bubbleShapeHeight + shadowDisplacement),
                         Color.BLACK,
-                        hasElevation ? 0.3f : 0.0f
+                        shadowAlpha
                 ),
                 // Counter bubble
                 new CozyMarkerElement(

@@ -150,8 +150,8 @@
     const CGFloat iconRightPadding = 3;
     const CGFloat elevation = hasElevation ? 4 : 0;
     const CGFloat totalStrokeSize = self.strokeSize + elevation;
-    const CGFloat miniPinRadius = 4.5;
-    const CGFloat miniPinWidth = 15;
+    const CGFloat miniPinRadius = 4;
+    const CGFloat miniPinWidth = 14;
     
     // setting constants for coutner
     const CGFloat counterBubblePadding = 6;
@@ -241,6 +241,8 @@
     // pointer coordinates
     CGFloat pointerX = canvasWidth / 2 - pointerWidth;
     CGFloat pointerY = canvasHeight - pointerSize - totalStrokeSize;
+
+    CGFloat shadowAlpha = hasElevation ? [self isMiniMarker:cozyMarkerData.size] ? 0.15 : 0.08 : 0;
     
     return [[CozyMarkerElements alloc] initWithCanvas:[[CozyMarkerElement alloc]
                                                        initWithBounds:CGRectMake(0, 0, canvasWidth, canvasHeight)
@@ -264,7 +266,7 @@
                                                                                          bubbleShapeHeight)
                                                                fillColor:UIColor.blackColor
                                                                strokeColor:nil
-                                                               alpha: hasElevation ? 0.15 : 0
+                                                               alpha: shadowAlpha
                                                                data:nil]
                                                labels:@[[[CozyMarkerElement alloc]
                                                          initWithBounds:CGRectMake(textX,
