@@ -70,6 +70,12 @@
                                                                                        255.0f) blue:(
                                                                                                      189.0f / 255.0f) alpha:1];
     UIColor *const selectedTextColor = UIColor.whiteColor;
+    UIColor *const selectedStrokeColor = [UIColor colorWithRed:
+                                         185.0f / 255.0f
+                                                        green:(185.0f /
+                                                               255.0f) blue:(
+                                                                             195.0f /
+                                                                             255.0f)                             alpha:1];
     UIColor *const selectedIconCircleColor = UIColor.whiteColor;
     UIColor *const selectedCounterBubbleColor = [UIColor colorWithRed:(
                     245.0f / 255.0f)
@@ -115,7 +121,7 @@
     if (cozyMarkerData.isSelected) {
         markerColor = selectedMarkerColor;
         textColor = selectedTextColor;
-        strokeColor = defaultStrokeColor;
+        strokeColor = selectedStrokeColor;
         iconCircleColor = selectedIconCircleColor;
         counterBubbleColor = selectedCounterBubbleColor;
     }
