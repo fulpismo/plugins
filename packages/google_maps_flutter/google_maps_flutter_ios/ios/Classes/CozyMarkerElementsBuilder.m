@@ -44,24 +44,24 @@
     UIColor *const defaultMarkerColor = UIColor.whiteColor;
     UIColor *const defaultTextColor = UIColor.blackColor;
     UIColor *const defaultStrokeColor = [UIColor colorWithRed:
-                                         217.0f / 255.0f
-                                                        green:(219.0f /
+                                         215.0f / 255.0f
+                                                        green:(215.0f /
                                                                255.0f) blue:(
-                                                                             208.0f /
+                                                                             221.0f /
                                                                              255.0f)                             alpha:1];
     
     UIColor *const defaultIconCircleColor = [UIColor colorWithRed:(
-                                                                   248.0f / 255.0f)
-                                                            green:(249.f /
+                                                                   245.0f / 255.0f)
+                                                            green:(245.f /
                                                                    255.0f) blue:(
-                                                                                 245.0f /
+                                                                                 247.0f /
                                                                                  255.0f)                                 alpha:1];
 
     UIColor *const defaultCounterBubbleColor = [UIColor colorWithRed:(
-                                                               235.0f / 255.0f)
-                                                        green:(237.f /
+                                                               245.0f / 255.0f)
+                                                        green:(245.f /
                                                                255.0f) blue:(
-                                                                             230.0f /
+                                                                             247.0f /
                                                                              255.0f)                             alpha:1];
     
     UIColor *const defaultIconColor = UIColor.blackColor;
@@ -72,23 +72,23 @@
     UIColor *const selectedTextColor = UIColor.whiteColor;
     UIColor *const selectedIconCircleColor = UIColor.whiteColor;
     UIColor *const selectedCounterBubbleColor = [UIColor colorWithRed:(
-                    248.0f / 255.0f)
-                                                            green:(249.f /
+                    245.0f / 255.0f)
+                                                            green:(245.f /
                                                                    255.0f) blue:(
-                    245.0f /
+                    247.0f /
                     255.0f)                                 alpha:1];
     
-    UIColor *const visualizedMarkerColor = [UIColor colorWithRed:(217.0f / 255.0f) green:(219.0f /
+    UIColor *const visualizedMarkerColor = [UIColor colorWithRed:(228.0f / 255.0f) green:(228.0f /
                                                                                           255.0f) blue:(
-                                                                                                        208.0f / 255.0f) alpha:1];
+                                                                                                        232.0f / 255.0f) alpha:1];
     UIColor *const visualizedTextColor = UIColor.blackColor;
-    UIColor *const visualizedStrokeColor = [UIColor colorWithRed:(197.0f / 255.0f) green:(201.0f / 255.0f) blue:(186.0f / 255.0f) alpha:1];
+    UIColor *const visualizedStrokeColor = [UIColor colorWithRed:(215.0f / 255.0f) green:(215.0f / 255.0f) blue:(221.0f / 255.0f) alpha:1];
     UIColor *const visualizedIconCircleColor = UIColor.whiteColor;
     UIColor *const visualizedCounterBubbleColor = [UIColor colorWithRed:(
-                    248.0f / 255.0f)
-                                                                green:(249.f /
+                    245.0f / 255.0f)
+                                                                green:(245.f /
                                                                        255.0f) blue:(
-                    245.0f /
+                    247.0f /
                     255.0f)                                 alpha:1];
     
     UIColor *const specialIconCircleColor = [UIColor colorWithRed:(240.0f / 255.0f) green:(243.0f /
