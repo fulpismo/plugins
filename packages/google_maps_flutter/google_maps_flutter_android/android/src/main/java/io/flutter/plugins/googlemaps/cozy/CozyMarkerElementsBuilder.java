@@ -119,13 +119,12 @@ class CozyMarkerElementsBuilder {
         final int defaultCounterBubbleColor = Color.rgb(245, 245, 247);
         final int selectedMarkerColor = Color.rgb(57, 87, 189);
         final int selectedTextColor = Color.WHITE;
-        final int selectedStrokeColor = Color.rgb(185, 185, 195);
         final int selectedIconCircleColor = Color.WHITE;
         final int selectedCounterBubbleColor = Color.rgb(245, 245, 247);
 
         final int visualizedMarkerColor = Color.rgb(228, 228, 232);
         final int visualizedTextColor = Color.BLACK;
-        final int visualizedStrokeColor = Color.rgb(215, 215, 221);
+        final int visualizedStrokeColor = Color.rgb(185, 185, 195);
         final int visualizedIconCircleColor = Color.WHITE;
         final int visualizedCounterBubbleColor = Color.rgb(245, 245, 247);
 
@@ -151,7 +150,7 @@ class CozyMarkerElementsBuilder {
         if (markerData.isSelected) {
             markerColor = selectedMarkerColor;
             textColor = selectedTextColor;
-            strokeColor = selectedStrokeColor;
+            strokeColor = defaultStrokeColor;
             iconCircleColor = selectedIconCircleColor;
             counterBubbleColor = selectedCounterBubbleColor;
         }

@@ -70,12 +70,6 @@
                                                                                        255.0f) blue:(
                                                                                                      189.0f / 255.0f) alpha:1];
     UIColor *const selectedTextColor = UIColor.whiteColor;
-    UIColor *const selectedStrokeColor = [UIColor colorWithRed:
-                                         185.0f / 255.0f
-                                                        green:(185.0f /
-                                                               255.0f) blue:(
-                                                                             195.0f /
-                                                                             255.0f)                             alpha:1];
     UIColor *const selectedIconCircleColor = UIColor.whiteColor;
     UIColor *const selectedCounterBubbleColor = [UIColor colorWithRed:(
                     245.0f / 255.0f)
@@ -88,7 +82,7 @@
                                                                                           255.0f) blue:(
                                                                                                         232.0f / 255.0f) alpha:1];
     UIColor *const visualizedTextColor = UIColor.blackColor;
-    UIColor *const visualizedStrokeColor = [UIColor colorWithRed:(215.0f / 255.0f) green:(215.0f / 255.0f) blue:(221.0f / 255.0f) alpha:1];
+    UIColor *const visualizedStrokeColor = [UIColor colorWithRed:(185.0f / 255.0f) green:(185.0f / 255.0f) blue:(195.0f / 255.0f) alpha:1];
     UIColor *const visualizedIconCircleColor = UIColor.whiteColor;
     UIColor *const visualizedCounterBubbleColor = [UIColor colorWithRed:(
                     245.0f / 255.0f)
@@ -121,7 +115,7 @@
     if (cozyMarkerData.isSelected) {
         markerColor = selectedMarkerColor;
         textColor = selectedTextColor;
-        strokeColor = selectedStrokeColor;
+        strokeColor = defaultStrokeColor;
         iconCircleColor = selectedIconCircleColor;
         counterBubbleColor = selectedCounterBubbleColor;
     }
