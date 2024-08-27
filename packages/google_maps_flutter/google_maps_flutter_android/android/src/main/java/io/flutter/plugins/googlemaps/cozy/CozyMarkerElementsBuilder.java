@@ -96,16 +96,19 @@ class CozyMarkerElementsBuilder {
         
         String text = markerData.label;
         String counterText = markerData.counter;
+        String icon = markerData.icon;
 
         boolean hasPointer = markerData.hasPointer;
         boolean hasCounter = counterText != null && !counterText.isEmpty();
         boolean hasElevation = markerData.hasElevation;
+        boolean hasIcon = icon != null && !icon.isEmpty();
 
         if (isMiniMarker(markerData.size)) {
             text = "";
             counterText = null;
             hasPointer = false;
             hasCounter = false;
+            hasIcon = false;
         }
 
         /* setting colors */
@@ -207,8 +210,8 @@ class CozyMarkerElementsBuilder {
         }
 
         // getting icon bitmap
-        Bitmap iconBitmap = getIconBitmap(markerData.icon, (int) Math.round(iconSize),
-                (int) Math.round(iconSize), iconColor);
+        Bitmap iconBitmap = hasIcon ? getIconBitmap(markerData.icon, (int) Math.round(iconSize),
+                (int) Math.round(iconSize), iconColor) : null;
 
         // set the marker height as the string height with space for padding and stroke
         float markerHeight = textBounds.height() + (2f * paddingVertical) + 2f * strokeSize;
