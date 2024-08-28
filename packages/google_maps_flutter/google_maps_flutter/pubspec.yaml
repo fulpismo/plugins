@@ -24,13 +24,13 @@ dependencies:
     git:
       url: https://github.com/fulpismo/plugins.git
       ref: v2.2.3-fork.20
-      path: packages/google_maps_flutter/google_maps_flutter_android    
+      path: packages/google_maps_flutter/google_maps_flutter_android
 
   google_maps_flutter_ios:
     git:
       url: https://github.com/fulpismo/plugins.git
       ref: v2.2.3-fork.20
-      path: packages/google_maps_flutter/google_maps_flutter_platform_interface 
+      path: packages/google_maps_flutter/google_maps_flutter_ios
 
   google_maps_flutter_platform_interface:
     git:
